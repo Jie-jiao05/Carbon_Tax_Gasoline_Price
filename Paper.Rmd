@@ -1,5 +1,5 @@
 ---
-title: "How Does the Carney Administration’s Abolition of the Carbon Tax Affect Gasoline Prices and Consumption, and How Does the Adjustments Shape Transportation Emissions?"
+title: "How Does the Carney Administration’s Abolition of the Carbon Tax Affect Gasoline Prices and Consumption, and Canadians Pattern of Gasoline Consumption Under Extreme Heat?"
 subtitle: "An ARIMAX-Based Evaluation Using Monthly Data from Canadian Provinces (Excluding Québec and Nunavut)"
 author: 
   - Shanjie Jiao
@@ -35,13 +35,14 @@ Carbon pricing has long been regarded as a central component of Canada’s clima
 The abolition of the fuel carbon tax directly affects retail gasoline prices, which are among the most visible and politically sensitive indicators of the cost of living in Canada. Canada is the fourth largest oil producer in the world, with a daily output of approximately 5.76 million barrels and about six percent of the global market share, ranking only behind Russia [@eia2024oilfaq]. Domestically, gasoline expenditures account for a substantial share of household budgets, especially in suburban and rural regions with limited public transit and in periods of extreme weather. Nationally, Fuel sales also represent an important source of government revenue. As a result, even small changes in gasoline prices can quickly alter consumption patterns and daily travel behaviour. Meanwhile, these behavioural adjustments might have direct consequences for greenhouse gas emissions for road transportation section, where the sector accounts for about 11.9 percent of global greenhouse gas emissions and nearly 74 percent of emissions from the transportation sector [@eia2024oilfaq]. Understanding how the removal of the carbon tax reshapes gasoline prices, and how these price movements influence gasoline consumption, and emissions, is therefore essential for assessing the broader economic and environmental implications of this policy change.
 
 ## Research Questions
-The purpose of this study is to evaluate how the Carney Administration’s abolition of the federal fuel carbon tax influences gasoline prices and how these price changes impact Canada gasoline price and consumption adjustment. And how does the removal of Carbon tax causes transportation related emissions shift. To guide the empirical analysis, the following research questions are examined.
+The purpose of this study is to evaluate how the Carney Administration’s abolition of the federal fuel carbon tax influences gasoline prices and how these price changes impact Canada gasoline price and consumption adjustment. And how does the removal of Carbon tax causes transportation related emissions shift. To guide the empirical analysis, the following research questions are examined. And will be answered at @sec-cf1 and @sec-cf2
 
 1. How did the abolition of the federal fuel carbon tax affect monthly retail gasoline prices in Canadian provinces that were subject to the federal fuel charge?
 
 2. To what extent do changes in gasoline prices influence monthly fuel consumption across provinces once local economic conditions and climate factors are taken into account?
 
-3. How dose the change in gasoline prices and consumption affect the greenhouse emission in road transpiration sector specifically ?
+
+3. To discover Canadians pattern of gasoline consumption under extreme heat(tend to consume less or more)?
 
 These research paper aim to answer this question for a comprehensive assessment of the economic and environmental consequences of the carbon tax abolition and provide a structured basis for evaluating both observed and counterfactual outcomes.
 
@@ -567,13 +568,13 @@ forecast::checkresiduals(price_models[["Ontario"]])
 ## Sales Quant Model --- Linear Regression
 For Sales_Quant model we deploya Linear regression model. The distribution of monthly sales appears approximately normal and shows limited seasonal variation. The @fig-sale-pro indicate that gasoline consumption does not exhibit strong  cyclical patterns, which suggests that more complex time-series structures. In addition, the relationship between sales quantity and its key determinants—gasoline price, average temperature, precipitation, and vehicle registrations—follows a stable and interpretable form that is well captured by a linear model.
 
-### Sales_Quant Model --- Assumption
+### Sales Quantity Model Assumption
   1.Linearity: The expected value of monthly gasoline sales is assumed to be a linear function of gasoline price, temperature, precipitation, and the number of registered vehicles. 
 	2.Independence: Monthly observations are assumed to be independent after controlling for the included predictors. 
 	3.Homoscedasticity: The variance of the regression residuals is assumed to remain constant across all levels of the predictors. 
 	4.Normality of Residuals: The residuals from the regression model are assumed to follow an approximately normal distribution. 
 	
-### Sales_Quant Model --- Specification
+### Sales Quantity Model Specification
 ```{=latex}
 \[
 \begin{aligned}
@@ -637,21 +638,21 @@ demand_coef <- tidy(demand_fit)
 demand_coef
 ```
 
-# Result
+# Result 
 ## Model Estimation Result and Interpretation {#sec-int}
-### Price Model --- Interpretation
+### Price Model Interpretation 
 Since our model are build for each province separatly. For interpretation we will select Ontaio to be a example for coefficient interpretation Our ARIMAX is be determined as ARIMAX(1,0,2). The estimated AR(1) coefficient (0.9283) is strongly positive and highly significant, indicating that gasoline prices are highly persistent over time—current prices are strongly influenced by prices in the previous month, which is consistent with the well-known sticky adjustment of retail fuel markets. The two MA terms, −0.0801 and −0.3342, jointly capture short-run shock adjustments, suggesting that unexpected price innovations are gradually corrected over subsequent months rather than dissipating immediately.
 
-Turning to the exogenous policy and market variables, the estimated coefficient on the carbon tax (β ≈ 0.0018) is positive, implying that increases in the per-litre federal fuel charge are transmitted into higher retail gasoline prices, although the magnitude suggests partial pass-through. The crude oil price coefficient (β ≈ 0.0016) is also positive, reflecting the expected relationship: higher crude benchmarks raise upstream wholesale costs and eventually increase retail pump prices. The CPI-gasoline index coefficient (β ≈ 0.0036) indicates that inflationary pressures specific to gasoline markets also contribute meaningfully to monthly price variation beyond raw commodity costs.
+Turning to the exogenous policy and market variables, the estimated coefficient on the carbon tax ($β$ = 0.0018) is positive, implying that increases in the per-litre federal fuel charge are transmitted into higher retail gasoline prices, although the magnitude suggests partial pass-through. The crude oil price coefficient ($β$ = 0.0016) is also positive, reflecting the expected relationship: higher crude benchmarks raise upstream wholesale costs and eventually increase retail pump prices. The CPI-gasoline index coefficient ($β$ = 0.0036) indicates that inflationary pressures specific to gasoline markets also contribute meaningfully to monthly price variation beyond raw commodity costs.
 
-Overall, the model demonstrates that (1) gasoline prices exhibit strong temporal dependence, (2) both carbon taxation and crude oil prices exert economically meaningful upward pressure on retail fuel prices, and (3) CPI-gasoline captures additional cost-of-living dynamics not explained by tax or crude price changes. These results confirm that the ARIMAX framework successfully separates the structural drivers of gasoline prices from their inherent time-series persistence.
+Overall, the model demonstrates that, firstly, gasoline prices exhibit strong temporal dependence. Secondly, both carbon taxation and crude oil prices exert economically meaningful upward pressure on retail fuel prices. Thirdly,  CPI-gasoline captures additional cost-of-living dynamics not explained by tax or crude price changes.
 
-### Price Model --- Counterfactual Analysis
+### Price Model Counterfactual Analysis
 
 #### Set Up
 To quantify how the removal of the federal carbon tax affected provincial gasoline prices, we construct a counterfactual scenario using our province-specific ARIMAX price model. The ARIMAX framework models gasoline prices as a function of carbon tax, crude oil prices, gasoline CPI, and autoregressive seasonal dynamics. For the counterfactual, we keep all market variables (crude oil price and CPI) at their observed 2025 values and modify only the carbon-tax input. Since the federal carbon tax was removed beginning in April 2025, we reintroduce the pre-removal tax schedule into the model for all months from 2025-04 onward, while keeping earlier months unchanged. We then forecast the counterfactual price path by feeding the model a tax series that assumes the policy never ended. The difference between the predicted counterfactual price and the actual observed price isolates the marginal effect of the carbon-tax removal on retail gasoline prices.
 
-#### Result
+#### Result {#sec-cf1}
 ```{r}
 #| echo: false
 
@@ -770,15 +771,15 @@ price_cf_results
 ```
 The counterfactual analysis compares the observed 2025 gasoline prices against the prices that would have prevailed if the federal carbon tax had remained in place. Across all provinces, the differences between actual and counterfactual prices are small, typically within the range of about 2 to 5 cents per litre. Most provinces would have experienced slightly higher gasoline prices under the counterfactual scenario, indicating that the removal of the carbon tax lowered prices only modestly. For example, Alberta shows a counterfactual price that is higher by roughly 3.4 cents per litre compared with the actual price. This pattern suggests that the effect of carbon tax removal on gasoline prices is limited, and recent price movements are more strongly driven by broader factors such as crude oil markets and general cost conditions captured by CPI.
 
-### Sales Model --- Interpretation
+### Sales Model Interpretation
 The linear regression results show that gasoline price, temperature and vehicle registration all statistically significant to gasoline sales. A one percent increase in gasoline price is associated with an estimated 0.03 percent decrease in gasoline demand, consistent with standard economic intuition regarding downward sloping demand. And higher average temperature is linked to a noticeable rise in sales, suggesting that warmer conditions encourage more driving activity. In contrast, a larger number of registered vehicles slightly reduces monthly fuel sales after controlling for other factors. The provincial indicators are also highly significant and capture structural differences in driving patterns and baseline fuel consumption cross regions. Provinces such as New Brunswick, Manitoba and Saskatchewan show lower average sales relative to the reference group(Alberta), whereas Ontario and Prince Edward Island display higher baseline demand. 
 
-### Sales Model --- Counterfactual Analysis
+### Sales Model Counterfactual Analysis
 
 #### Set Up
 To evaluate how gasoline consumption would have changed had the federal carbon tax remained in place, we construct a counterfactual scenario using the estimated log–log demand model. The key mechanism is that the carbon tax affects gasoline consumption only through its impact on retail gasoline prices. Therefore, instead of removing the tax directly from the demand equation, we simulate a counterfactual gasoline price for 2025 by adding back the foregone tax (measured in cents per litre) to the observed retail price. Using the estimated price elasticity from the regression model, we then recompute predicted sales under the counterfactual price while holding all other conditions constant, including vehicle registration, temperature, and province fixed effects. The difference between the observed and counterfactual predicted quantities represents the estimated change in gasoline consumption attributable solely to the removal of the carbon tax.
 
-#### Result
+#### Result {#sec-cf2}
 ```{r}
 #| echo: false
 
