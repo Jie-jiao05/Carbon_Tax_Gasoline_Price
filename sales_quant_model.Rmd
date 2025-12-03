@@ -1,0 +1,177 @@
+---
+title: "sales_quant_model"
+output: html_document
+---
+
+```{r}
+
+library(knitr)
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(kableExtra)
+library(stringr)
+
+gas<-read.csv("Final_Data.csv")
+
+
+library(dplyr)
+library(lubridate)
+library(broom)
+
+# 1️⃣ Clean + keep variables you need
+demand_data <- gas %>%
+  mutate(
+    Date     = as.Date(Date),
+    Province = trimws(Province)
+  ) %>%
+  filter(Province != "",
+         Date >= as.Date("2017-01-01"),
+         Date <= as.Date("2025-09-01"),
+         !Province %in% c("Quebec", "Nunavut")) %>%
+  select(Province, Date,
+         Sale_quant,
+         Gasoline_Price,
+         AvgTemp_C,
+         Vehicles_Reg) %>%
+  drop_na() %>%
+  mutate(
+    ln_sales   = log(Sale_quant),
+    ln_price   = log(Gasoline_Price),
+    ln_veh_reg = log(Vehicles_Reg)
+  )
+
+# 2️⃣ Static log–log demand regression with province fixed effects
+demand_fit <- lm(
+  ln_sales ~ ln_price + AvgTemp_C + ln_veh_reg + factor(Province),
+  data = demand_data
+)
+
+# 3️⃣ Model summary + tidy table (estimates, s.e., p-values)
+summary(demand_fit)
+demand_coef <- tidy(demand_fit)
+demand_coef
+
+## 0️⃣ 你已经有的：demand_data 和 demand_fit -----------------
+# demand_data 里有:
+# Province, Date, Sale_quant, Gasoline_Price, AvgTemp_C, Vehicles_Reg,
+# ln_sales, ln_price, ln_veh_reg
+# demand_fit <- lm(ln_sales ~ ln_price + AvgTemp_C + ln_veh_reg + factor(Province),
+#                  data = demand_data)
+
+## 1️⃣ 先在原数据上算“基准情景”的预测销量 ----------------------
+demand_base <- demand_data %>%
+  mutate(
+    pred_ln_sales_actual = predict(demand_fit, newdata = ., type = "response"),
+    pred_sales_actual    = exp(pred_ln_sales_actual)   # 还原到数量
+  )
+
+## 2️⃣ 构造 counterfactual 价格：这里举例为 2019-04 之后价格降低 5% ----
+# 你可以把 0.05 换成你自己根据价格模型算出的“去掉碳税”比例
+
+demand_cf <- demand_base %>%
+  mutate(
+    ln_price_cf = if_else(
+      Date >= as.Date("2019-04-01"),
+      ln_price - log(1.05),   # 2019-04 之后价格降低 5%
+      ln_price                # 之前保持不变
+    ),
+    # 把模型里用到的 ln_price 换成 counterfactual 的版本
+    ln_price = ln_price_cf
+  ) %>%
+  mutate(
+    pred_ln_sales_cf = predict(demand_fit, newdata = ., type = "response"),
+    pred_sales_cf    = exp(pred_ln_sales_cf)
+  )
+
+## 3️⃣ 按省汇总：真实 vs counterfactual 的销量对比 ---------------
+cf_summary <- demand_cf %>%
+  # 如果只想看某一段时期，可以在这儿再加一层 filter(Date >= ..., Date <= ...)
+  group_by(Province) %>%
+  summarise(
+    Actual_Sales = sum(pred_sales_actual),
+    CF_Sales     = sum(pred_sales_cf),
+    Diff_Sales   = CF_Sales - Actual_Sales,
+    Diff_Percent = 100 * Diff_Sales / Actual_Sales
+  ) %>%
+  arrange(Province)
+
+cf_summary
+```
+```{r}
+library(dplyr)
+
+# 1️⃣ 在 demand_data 里补上 Tax_cents_per_litre（如果还没 merge 的话）
+# 如果你的 demand_data 里已经有 Tax_cents_per_litre 就跳过这一步
+demand_data <- gas_clean %>%
+  select(Province, Date,
+         Sale_quant,
+         Gasoline_Price,
+         AvgTemp_C,
+         Vehicles_Reg,
+         Tax_cents_per_litre) %>%
+  drop_na() %>%
+  mutate(
+    ln_sales   = log(Sale_quant),
+    ln_price   = log(Gasoline_Price),
+    ln_veh_reg = log(Vehicles_Reg)
+  )
+
+# 2️⃣ 定义“有碳税的 counterfactual 价格”
+# 假设 Gasoline_Price 是 dollars per litre, tax 是 cents per litre
+demand_data_cf <- demand_data %>%
+  mutate(
+    Price_cf = Gasoline_Price + Tax_cents_per_litre / 100,
+    ln_price_cf = log(Price_cf)
+  )
+
+# 3️⃣ 用原模型的系数做两套预测：
+#     baseline 用实际价格
+#     counterfactual 用 Price_cf
+# 注意：只改 ln_price 这一个自变量 其他保持不变
+demand_data_cf <- demand_data_cf %>%
+  mutate(
+    # baseline prediction
+    pred_ln_sales_baseline = predict(
+      demand_fit,
+      newdata = data.frame(
+        ln_price       = ln_price,
+        AvgTemp_C      = AvgTemp_C,
+        ln_veh_reg     = ln_veh_reg,
+        Province       = Province
+      )
+    ),
+    # counterfactual prediction with carbon tax NOT removed
+    pred_ln_sales_cf = predict(
+      demand_fit,
+      newdata = data.frame(
+        ln_price       = ln_price_cf,
+        AvgTemp_C      = AvgTemp_C,
+        ln_veh_reg     = ln_veh_reg,
+        Province       = Province
+      )
+    ),
+    # 回到 level
+    pred_sales_baseline = exp(pred_ln_sales_baseline),
+    pred_sales_cf       = exp(pred_ln_sales_cf),
+    sales_diff          = pred_sales_cf - pred_sales_baseline,
+    sales_diff_pct      = 100 * (pred_sales_cf - pred_sales_baseline) / pred_sales_baseline
+  )
+
+
+post_policy <- demand_data_cf %>%
+  filter(Date >= as.Date("2025-04-01"))
+
+# 按省汇总 counterfactual 效果
+cf_summary_prov <- post_policy %>%
+  group_by(Province) %>%
+  summarise(
+    Actual_Sales    = sum(pred_sales_baseline, na.rm = TRUE),
+    CF_Sales        = sum(pred_sales_cf, na.rm = TRUE),
+    Diff_Sales      = CF_Sales - Actual_Sales,
+    Diff_Sales_Pct  = 100 * (CF_Sales - Actual_Sales) / Actual_Sales
+  ) %>%
+  arrange(Province)
+
+cf_summary_prov
+```
