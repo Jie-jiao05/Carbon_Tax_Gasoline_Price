@@ -6,7 +6,7 @@ author:
 thanks: "Code and data are available at: https://github.com/Jie-jiao05/Carbon_Tax_Gasoline_Price/tree/main."
 date: today
 date-format: long
-abstract: "For TA/PROF. It is just a draft, for now i just try to do all the part as possible(a general frame), too much proj workload ddl at same day with final exam, so the paragrap and sentence is not well-written, I promise u can expect more origional, concise version on my final submission. "
+abstract: "For TA/PROF. It is just a draft, for now i just try to do all the part as possible(a general frame), too much proj workload ddl at same day with final exam, so the paragrap and sentence is not well-written, I promise u can expect more origional, concise version on my final submission. This study evaluates how the abolition of the federal fuel carbon tax by the Carney Administration affects gasoline prices, fuel demand across Canadian provinces. Using monthly data from 2017 to 2025, we estimate a time series ARIMAX model for gasoline prices with crude oil prices, gasoline CPI, and carbon tax levels as external drivers. We then use a log consumption model with province fixed effects to measure the short run price elasticity of gasoline consumption. Counterfactual simulations suggest that maintaining the carbon tax would have raised gasoline prices by less than one cent per litre in most provinces and would have produced only very small changes in demand. As a result, we concluded the estimated impact on transportation emissions is limited. Overall, the findings indicate that short run gasoline market dynamics are shaped more by global crude oil conditions and household transportation needs than by the recent change in carbon tax policy. Canada policy should aim for a broader structural change to incentify more high tecn for more fuel-efficient or EV, to reduce the general demand which will push down the gasolone price. "
 format:
   pdf:
     fig-pos: H
@@ -433,11 +433,11 @@ ggplot(climate_2024, aes(x = Date)) +
 Our retail gasoline price series is recorded monthly, and displays clear time dependent patterns @fig-price-ca. These features imply that a simple regression model would produce biased or inefficient estimates because the explanatory variables would be confounded with the inherent serial dependence in the price series. For this reason, the ARIMAX model is adopted. ARIMAX preserves the ARIMA structure to capture the dynamic evolution of gasoline prices through explicit modelling of autoregressive and moving average components, which ensures that the estimated effects of external factors are not distorted by time series dependence. At the same time, the model enable to incorporates relevant exogenous variables such as crude oil prices, the federal carbon tax, and the gasoline component of the Consumer Price Index, allowing the model to separate tax policy driven price movements from broader market fluctuations. In this way, ARIMAX combines the interpretability of a traditional regression with the capacity to represent time series dynamics, making it well suited for analysing gasoline price formation in the presence of policy shocks. The interpretation relarive to each coeficient will be illustrated in @sec-int.
 
 ### Price Model: ARIMAX Assumption
-  1.Gasoline prices follow a time dependent structure where past price movements influence current prices.
-	2.	External factors such as carbon tax, crude oil costs, and CPI gasoline are independent and measurable effects on monthly gasoline prices.
-	3.	No strong or systematic seasonal pattern in gasoline prices, consistent with our exploratory analysis.
-	4.	Relationship between gasoline prices and the included covariates is stable across provinces after controlling for province fixed effects.
-	5.	Error term is stationary and serially correlated only through the ARIMA component.
+1.  Gasoline prices follow a time dependent structure where past price movements influence current prices.
+2.	External factors such as carbon tax, crude oil costs, and CPI gasoline are independent and measurable effects on monthly gasoline prices.
+3.	No strong or systematic seasonal pattern in gasoline prices, consistent with our exploratory analysis.
+4.	Relationship between gasoline prices and the included covariates is stable across provinces after controlling for province fixed effects.
+5.	Error term is stationary and serially correlated only through the ARIMA component.
 
 ### Price Model: ARIMAX Specification
 The model takes the following form:
@@ -569,10 +569,10 @@ forecast::checkresiduals(price_models[["Ontario"]])
 For Sales_Quant model we deploya Linear regression model. The distribution of monthly sales appears approximately normal and shows limited seasonal variation. The @fig-sale-pro indicate that gasoline consumption does not exhibit strong  cyclical patterns, which suggests that more complex time-series structures. In addition, the relationship between sales quantity and its key determinants—gasoline price, average temperature, precipitation, and vehicle registrations—follows a stable and interpretable form that is well captured by a linear model.
 
 ### Sales Quantity Model Assumption
-  1.Linearity: The expected value of monthly gasoline sales is assumed to be a linear function of gasoline price, temperature, precipitation, and the number of registered vehicles. 
-	2.Independence: Monthly observations are assumed to be independent after controlling for the included predictors. 
-	3.Homoscedasticity: The variance of the regression residuals is assumed to remain constant across all levels of the predictors. 
-	4.Normality of Residuals: The residuals from the regression model are assumed to follow an approximately normal distribution. 
+1.  Linearity: The expected value of monthly gasoline sales is assumed to be a linear function of gasoline price, temperature, precipitation, and the number of registered vehicles. 
+2.  Independence: Monthly observations are assumed to be independent after controlling for the included predictors.
+3.  Homoscedasticity: The variance of the regression residuals is assumed to remain constant across all levels of the predictors. 
+4.  Normality of Residuals: The residuals from the regression model are assumed to follow an approximately normal distribution. 
 	
 ### Sales Quantity Model Specification
 ```{=latex}
