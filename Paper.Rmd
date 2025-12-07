@@ -103,7 +103,7 @@ gas_clean <- gas %>%
 
 
 ggplot(gas_clean, aes(x = Date, y = Gasoline_Price, color = Province)) +
-  geom_line(size = 0.8, show.legend = FALSE) +      # 保留颜色，但隐藏 legend
+  geom_line(size = 0.8, show.legend = FALSE) +      
   facet_wrap(~ Province, scales = "free_y", ncol = 4) +
   scale_x_date(
     date_breaks = "1 year",
@@ -112,7 +112,7 @@ ggplot(gas_clean, aes(x = Date, y = Gasoline_Price, color = Province)) +
   labs(
     title = "Monthly Gasoline Price by Province (2017–2025)",
     x = "Year",
-    y = "Gasoline Price"
+    y = "Gasoline Price (cents per litre)"
   ) +
   theme_minimal(base_size = 10) +
   theme(
@@ -140,21 +140,21 @@ library(dplyr)
 library(ggplot2)
 library(lubridate)
 
-# 1. Drop NA rows and ensure Sale_quant correct
+# Drop NA rows and ensure Sale_quant correct
 gas_clean <- gas %>%
   filter(!is.na(Sale_quant), !is.na(Province)) %>%
   mutate(Year = year(Date))
 
-# 2. Compute annual sales by province
+# annual sales by province
 annual_sales <- gas_clean %>%
   group_by(Province, Year) %>%
   summarise(Annual_Sales = sum(Sale_quant, na.rm = TRUE), .groups = "drop")
 
-# 3. Plot with log y-axis
+# log y-axis
 ggplot(annual_sales, aes(x = Year, y = Annual_Sales, color = Province, group = Province)) +
   geom_line(size = 1) +
   geom_point(size = 2) +
-  scale_y_log10() +                                   # 对数纵轴
+  scale_y_log10() +                                   
   labs(
     title = "Annual Gasoline Sales by Province (2017–2025)",
     x = "Year",
@@ -303,24 +303,24 @@ Our crude oil price are sourced from organization Trading Economic [@tradingecon
 #| message: false
 #| warning: false
 #| fig-cap: Change in Crude Oil Price with Gasoline
-# Ensure Date is Date type
+
 gas$Date <- as.Date(gas$Date)
 
-# ---- 1. National average monthly gasoline price ----
+# National average monthly gasoline price
 gas_price_monthly <- gas %>%
   group_by(Date) %>%
   summarise(Avg_Gasoline = mean(Gasoline_Price, na.rm = TRUE))
 
-# ---- 2. National average monthly crude oil price ----
+# National average monthly crude oil price 
 oil_price_monthly <- gas %>%
   group_by(Date) %>%
   summarise(Avg_Crude = mean(Crude_Oil_Price, na.rm = TRUE))
 
-# ---- 3. Combine two series into one data frame ----
+# Combine two series into one data frame
 price_compare <- gas_price_monthly %>%
   left_join(oil_price_monthly, by = "Date")
 
-# ---- 4. Plot: Crude Oil vs Gasoline ----
+# Crude Oil vs Gasoline graph
 ggplot(price_compare, aes(x = Date)) +
   geom_line(aes(y = Avg_Gasoline, color = "Gasoline Price"), size = 1) +
   geom_line(aes(y = Avg_Crude, color = "Crude Oil Price"), size = 1) +
@@ -602,7 +602,7 @@ library(dplyr)
 library(lubridate)
 library(broom)
 
-# 1️⃣ Clean + keep variables you need
+# ⃣ Clean + keep variables 
 demand_data <- gas %>%
   mutate(
     Date     = as.Date(Date),
@@ -624,13 +624,13 @@ demand_data <- gas %>%
     ln_veh_reg = log(Vehicles_Reg)
   )
 
-# 2️⃣ Static log–log demand regression with province fixed effects
+
 demand_fit <- lm(
   ln_sales ~ ln_price + AvgTemp_C + ln_veh_reg + factor(Province),
   data = demand_data
 )
 
-# 3️⃣ Model summary + tidy table (estimates, s.e., p-values)
+# ⃣ Model summary + tidy table (estimates, s.e., p-values)
 summary(demand_fit)
 #demand_coef <- tidy(demand_fit)
 #demand_coef
@@ -670,9 +670,6 @@ library(purrr)
 library(forecast)
 library(lubridate)
 
-#------------------------------------------------------------
-# 1. Prepare data
-#------------------------------------------------------------
 gas_cf <- gas %>%
   mutate(
     Date     = as.Date(Date),
@@ -693,9 +690,8 @@ gas_cf <- gas %>%
   ) %>%
   drop_na()
 
-#------------------------------------------------------------
-# 2.  Counterfactual Tax：keep tax
-#------------------------------------------------------------
+# Counterfactual Tax：keep tax
+
 gas_cf <- gas_cf %>%
   mutate(
     Tax_cf = if_else(
@@ -706,9 +702,9 @@ gas_cf <- gas_cf %>%
     )
   )
 
-#------------------------------------------------------------
-# 3. remade
-#------------------------------------------------------------
+
+#  remade
+
 fit_arimax_price <- function(df){
 
   df <- df %>% arrange(Date)
@@ -733,9 +729,8 @@ fit_arimax_price <- function(df){
   return(fit)
 }
 
-#------------------------------------------------------------
-# 4. Counterfactual Forecast Function
-#------------------------------------------------------------
+# Counterfactual Forecast Function
+
 price_cf_one_prov <- function(df){
 
   df <- df %>% arrange(Date)
@@ -768,9 +763,8 @@ price_cf_one_prov <- function(df){
   )
 }
 
-#------------------------------------------------------------
-# 5. Run CF for all provinces
-#------------------------------------------------------------
+#  all provinces
+
 prov_list <- split(gas_cf, gas_cf$Province)
 
 price_cf_results <- map_dfr(prov_list, price_cf_one_prov)
@@ -794,15 +788,13 @@ To evaluate how gasoline consumption would have changed had the federal carbon t
 #| echo: false
 
 
-## 1️⃣ 先在原数据上算“基准情景”的预测销量 ----------------------
+
 demand_base <- demand_data %>%
   mutate(
     pred_ln_sales_actual = predict(demand_fit, newdata = ., type = "response"),
     pred_sales_actual    = exp(pred_ln_sales_actual)   # 还原到数量
   )
 
-## 2️⃣ 构造 counterfactual 价格：这里举例为 2019-04 之后价格降低 5% ----
-# 你可以把 0.05 换成你自己根据价格模型算出的“去掉碳税”比例
 
 demand_cf <- demand_base %>%
   mutate(
@@ -819,7 +811,7 @@ demand_cf <- demand_base %>%
     pred_sales_cf    = exp(pred_ln_sales_cf)
   )
 
-## 3️⃣ 按省汇总：真实 vs counterfactual 的销量对比 ---------------
+
 cf_summary <- demand_cf %>%
   # 如果只想看某一段时期，可以在这儿再加一层 filter(Date >= ..., Date <= ...)
   group_by(Province) %>%
