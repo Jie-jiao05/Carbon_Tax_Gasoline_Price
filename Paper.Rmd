@@ -1,6 +1,6 @@
 ---
-title: "How Does the Carney Administration’s Abolition of the Carbon Tax Affect Gasoline Prices?"
-subtitle: "An ARIMAX-Based Evaluation Using Monthly Data from Canadian Provinces (Excluding Québec and Nunavut)"
+title: "How Does the Carney Administration’s Abolition of the Carbon Tax Affect Gasoline Prices and Consumption?"
+subtitle: "An ARIMAX and Linear Regression-Based Evaluation Using Monthly Data from Canadian Provinces (Excluding Québec and Nunavut)"
 author: 
   - Shanjie Jiao
 thanks: "Code and data are available at: https://github.com/Jie-jiao05/Carbon_Tax_Gasoline_Price/tree/main."
