@@ -215,4 +215,5 @@ prov_list <- split(gas_cf, gas_cf$Province)
 price_cf_results <- map_dfr(prov_list, price_cf_one_prov)
 
 price_cf_results
+readr::write_csv(price_cf_results, "price_cf_results_full.csv")
 ```

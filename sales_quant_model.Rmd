@@ -175,3 +175,11 @@ cf_summary_prov <- post_policy %>%
 
 cf_summary_prov
 ```
+
+```{r}
+par(mfrow = c(2, 2))
+plot(demand_fit)
+par(mfrow = c(1, 1))
+```
+
+
