@@ -500,10 +500,9 @@ gas_model <- gas_clean %>%
          CPI_Gasoline) %>%
   drop_na()
 
-#--------------------------------------------------
 # 2.  ARIMAX”model
 #ARIMA(p,d,q)(P,D,Q)[12]
-#--------------------------------------------------
+
 fit_arimax_one_prov <- function(df_prov){
 
   df_prov <- df_prov %>% arrange(Date)
@@ -528,9 +527,9 @@ fit_arimax_one_prov <- function(df_prov){
   return(fit)
 }
 
-#--------------------------------------------------
+
 # by province
-#--------------------------------------------------
+
 prov_list <- split(gas_model, gas_model$Province)
 
 price_models <- map(prov_list, fit_arimax_one_prov)
@@ -800,10 +799,10 @@ demand_cf <- demand_base %>%
   mutate(
     ln_price_cf = if_else(
       Date >= as.Date("2019-04-01"),
-      ln_price - log(1.05),   # 2019-04 之后价格降低 5%
-      ln_price                # 之前保持不变
+      ln_price - log(1.05),    
+      ln_price                
     ),
-    # 把模型里用到的 ln_price 换成 counterfactual 的版本
+
     ln_price = ln_price_cf
   ) %>%
   mutate(
@@ -813,7 +812,7 @@ demand_cf <- demand_base %>%
 
 
 cf_summary <- demand_cf %>%
-  # 如果只想看某一段时期，可以在这儿再加一层 filter(Date >= ..., Date <= ...)
+  # for other period，just add filter(Date >= ..., Date <= ...)
   group_by(Province) %>%
   summarise(
     Actual_Sales = sum(pred_sales_actual),
