@@ -1,13 +1,12 @@
 ---
-title: "How Does the Carney Administration’s Abolition of the Carbon Tax Affect Gasoline Prices and Consumption, and Canadians Pattern of Gasoline Consumption Under Extreme Heat?"
+title: "How Does the Carney Administration’s Abolition of the Carbon Tax Affect Gasoline Prices?"
 subtitle: "An ARIMAX-Based Evaluation Using Monthly Data from Canadian Provinces (Excluding Québec and Nunavut)"
 author: 
   - Shanjie Jiao
 thanks: "Code and data are available at: https://github.com/Jie-jiao05/Carbon_Tax_Gasoline_Price/tree/main."
 date: today
 date-format: long
-abstract: "This study evaluates how the abolition of the federal fuel carbon tax by the Carney Administration affects gasoline prices, fuel demand across Canadian provinces. Using monthly data from 2017 to 2025, we estimate a time series ARIMAX model for gasoline prices with crude oil prices, gasoline CPI, and carbon tax levels as external drivers. We then use a log consumption model with province fixed effects to measure the short run price elasticity of gasoline consumption. Counterfactual simulations suggest that maintaining the carbon tax would have raised gasoline prices by less than one cent per litre in most provinces and would have produced only very small changes in demand. As a result, we concluded the estimated impact on transportation emissions is limited. Overall, the findings indicate that short run gasoline market dynamics are shaped more by global crude oil conditions and household transportation needs than by the recent change in carbon tax policy. Canada policy should aim for a broader structural change to incentify more high tecn for more fuel-efficient or EV, to reduce the general demand 
-to push down the gasolone price and greeenhouses emission. "
+abstract: "This study evaluates how the abolition of the federal fuel carbon tax by the Carney Administration affects gasoline prices, fuel demand across Canadian provinces. Using monthly data from 2017 to 2025, we estimate a time series ARIMAX model for gasoline prices with crude oil prices, gasoline CPI, and carbon tax levels as external drivers. We then use a log consumption model with province fixed effects to measure the short run price elasticity of gasoline consumption. Counterfactual simulations suggest that maintaining the carbon tax would have raised gasoline prices by less than one cent per litre in most provinces and would have produced only very small changes in demand. As a result, we concluded the estimated impact on transportation emissions is limited. Overall, the findings indicate that short run gasoline market dynamics are shaped more by global crude oil conditions and household transportation needs than by the recent change in carbon tax policy. Canada policy should aim for a broader structural change to incentify more high tecn for more fuel-efficient or EV, to reduce the general demand to push down the gasolone price and greeenhouses emission. "
 format:
   pdf:
     fig-pos: H
@@ -41,9 +40,6 @@ The purpose of this study is to evaluate how the Carney Administration’s aboli
 1. How did the abolition of the federal fuel carbon tax affect monthly retail gasoline prices in Canadian provinces that were subject to the federal fuel charge?
 
 2. To what extent do changes in gasoline prices influence monthly fuel consumption across provinces once local economic conditions and climate factors are taken into account?
-
-
-3. To discover Canadians pattern of gasoline consumption under extreme heat(tend to consume less or more)?
 
 These research paper aim to answer this question for a comprehensive assessment of the economic and environmental consequences of the carbon tax abolition and provide a structured basis for evaluating both observed and counterfactual outcomes.
 
