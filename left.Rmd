@@ -1,0 +1,251 @@
+---
+title: "left"
+output: html_document
+---
+```{r}
+### CPI:Gasoline
+The gasoline Consumer Price Index comes from Statistics Canada’s monthly CPI database [@statcan2025cpi]. This dataset provides a very comprehensive measure of CPI changes across a wide range of category for each province. Since this study focuses specifically on behavioural responses to gasoline price changes, so only the gasoline-specific CPI series is retained.
+
+@tbl-CPI-ca summarizes the average gasoline-specific CPI for each province from 2017 to 2025, capturing long-run differences in gasoline purchasing power across regions. Provinces such as British Columbia and Ontario exhibit the highest average CPI levels, indicating consistently stronger upward pressure on gasoline prices or higher underlying cost structures. In contrast, Yukon, Prince Edward Island, and the Northwest Territories show the lowest averages, suggesting comparatively slower growth in gasoline price levels over the period. 
+
+
+```{r}
+#| label: tbl-CPI-ca
+#| tbl-cap: CPI of Gasoline in Canada by Province
+#| echo: false
+#| message: false
+#| warning: false
+#| tbl-height: 5
+#| fig-width: 6
+
+cpi_avg <- gas %>%
+  filter(Date >= as.Date("2017-01-01"),
+         Date <= as.Date("2025-12-31")) %>%
+  group_by(Province) %>%
+  summarise(
+    Avg_CPI_Gasoline_2017_2025 = round(mean(CPI_Gasoline, na.rm = TRUE), 2)
+  ) %>%
+  arrange(Province)
+
+
+cpi_avg %>%
+  kbl(
+    digits = 2,
+    align = "lc",
+    col.names = c("Province", "Avg Gasoline CPI")
+  ) %>%
+  kable_classic(full_width = FALSE, html_font = "Times New Roman") %>%
+  kable_styling(
+    position = "center",
+    font_size = 10
+  )
+
+```
+
+
+```{r}
+#| label: tbl-veh-ca
+#| tbl-cap: Min and Max Registered Vehicle in Canada
+#| echo: false
+#| message: false
+#| warning: false
+
+vehicle_summary <- gas %>%
+  filter(Date == as.Date("2024-12-01")) %>%   
+  select(Province, Vehicles_Reg) %>% 
+  summarise(
+    Min_Registered = min(Vehicles_Reg, na.rm = TRUE),
+    Min_Province = Province[which.min(Vehicles_Reg)],
+    Max_Registered = max(Vehicles_Reg, na.rm = TRUE),
+    Max_Province = Province[which.max(Vehicles_Reg)]
+  )
+
+vehicle_summary %>%
+  kbl(
+    digits = 0,
+    align = "lccc"
+  ) %>%
+  add_header_above(c("Vehicle Registration Summary (Dec 2024)" = 4)) %>%
+  kable_classic(full_width = FALSE, html_font = "Times New Roman") %>%
+  kable_styling(position = "center", font_size = 10)
+
+
+```
+```
+
+```{r}
+#| label: fig-res
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-cap: Assumption Check for Linear Regression
+par(mfrow = c(2, 2))
+plot(demand_fit)
+par(mfrow = c(1, 1))
+```
+@fig-res presents the diagnostic checks for the Price Model The Residuals vs Fitted plot shows no clear curvature, indicating that the linear functional form is appropriate for the model. The Q–Q Residual plot aligns closely with the 45-degree reference line, suggesting that the error terms are approximately normally distributed with only minor tail deviation. Meanwhile, the Scale–Location plot reveals a generally horizontal trend but with slight differences in residual spread across fitted values, but consider this Price model is a general model rather than for a specific province, so there exist a very mild heteroscedasticity issue. Finally, the Residuals vs Leverage plot shows most points well below the Cook’s distance threshold, implying the absence of influential observations that could bias coefficient estimates. Overall, the regression model satisfies the main linearity and normality assumptions, with only a small concern regarding variance consistency.
+```{r}
+#| echo: false
+
+library(dplyr)
+library(purrr)
+library(forecast)
+library(lubridate)
+
+gas_cf <- gas %>%
+  mutate(
+    Date     = as.Date(Date),
+    Province = trimws(Province)
+  ) %>%
+  filter(
+    Province != "",
+    !Province %in% c("Quebec", "Nunavut"),
+    Date >= as.Date("2017-01-01"),
+    Date <= as.Date("2025-09-01")
+  ) %>%
+  select(
+    Province, Date,
+    Gasoline_Price,
+    Tax_cents_per_litre,
+    Crude_Oil_Price,
+    CPI_Gasoline
+  ) %>%
+  drop_na()
+
+# Counterfactual Tax：keep tax
+
+gas_cf <- gas_cf %>%
+  mutate(
+    Tax_cf = if_else(
+      Date >= as.Date("2025-04-01"),
+      # tax at 2024）
+      Tax_cents_per_litre[Date == as.Date("2024-03-01")][1],
+      Tax_cents_per_litre
+    )
+  )
+
+
+#  remade
+
+fit_arimax_price <- function(df){
+
+  df <- df %>% arrange(Date)
+
+  y <- log(df$Gasoline_Price)
+
+  xreg_train <- as.matrix(df %>%
+                            transmute(
+                              Tax_cents_per_litre,
+                              Crude_Oil_Price,
+                              CPI_Gasoline
+                            ))
+
+  fit <- auto.arima(
+    y,
+    xreg = xreg_train,
+    seasonal = TRUE,
+    stepwise = FALSE,
+    approximation = FALSE
+  )
+
+  return(fit)
+}
+
+# Counterfactual Forecast Function
+
+price_cf_one_prov <- function(df){
+
+  df <- df %>% arrange(Date)
+
+  fit <- fit_arimax_price(df)
+
+  future_df <- df %>% filter(Date >= as.Date("2025-04-01"))
+
+  xreg_cf <- as.matrix(future_df %>%
+                         transmute(
+                           Tax_cents_per_litre = Tax_cf,
+                           Crude_Oil_Price,
+                           CPI_Gasoline
+                         ))
+
+  # Counterfactual Forecast
+  fc <- forecast(
+    fit,
+    xreg = xreg_cf,
+    h = nrow(future_df)
+  )
+
+  tibble(
+    Province          = df$Province[1],
+    Date              = future_df$Date,
+    Actual_Price      = future_df$Gasoline_Price,
+    CF_ln_Price       = as.numeric(fc$mean),
+    CF_Price          = exp(as.numeric(fc$mean)),
+    Price_Difference  = CF_Price - Actual_Price
+  )
+}
+
+#  all provinces
+
+prov_list <- split(gas_cf, gas_cf$Province)
+
+price_cf_results <- map_dfr(prov_list, price_cf_one_prov)
+
+head(price_cf_results, 6)
+```
+
+```{r}
+#| echo: false
+
+library(dplyr)
+
+shock_date <- as.Date("2025-04-01")  # 你要哪一年就改这里
+shock_pct  <- 0.05                   # 5% price decrease
+
+# 1) Actual predictions
+base_actual <- demand_data %>%
+  mutate(
+    pred_ln_sales_actual = predict(demand_fit, newdata = .),
+    pred_sales_actual    = exp(pred_ln_sales_actual)
+  )
+
+# 2) Counterfactual: reduce price by 5% after shock_date
+base_cf <- demand_data %>%
+  mutate(
+    ln_price_cf = if_else(Date >= shock_date,
+                          ln_price + log(1 - shock_pct),  # price down => ln price decreases
+                          ln_price)
+  ) %>%
+  transmute(
+    Province, Date,
+    ln_sales, ln_price = ln_price_cf, AvgTemp_C, Precip_mm, ln_veh_reg
+  ) %>%
+  mutate(
+    pred_ln_sales_cf = predict(demand_fit, newdata = .),
+    pred_sales_cf    = exp(pred_ln_sales_cf)
+  )
+
+# 3) Combine + table
+cf_summary <- base_actual %>%
+  select(Province, Date, pred_sales_actual) %>%
+  left_join(base_cf %>% select(Province, Date, pred_sales_cf),
+            by = c("Province","Date")) %>%
+  filter(Date >= shock_date) %>%
+  group_by(Province) %>%
+  summarise(
+    Actual_Sales = sum(pred_sales_actual, na.rm = TRUE),
+    CF_Sales     = sum(pred_sales_cf, na.rm = TRUE),
+    Diff_Sales   = CF_Sales - Actual_Sales,
+    Diff_Percent = 100 * Diff_Sales / Actual_Sales,
+    .groups = "drop"
+  ) %>%
+  arrange(Province)
+
+cf_summary
+
+
+```
+
+The counterfactual experiment estimates how gasoline demand in each province would have changed if the carbon tax had not been removed, holding all other factors constant. Since the carbon tax increases gasoline prices and the estimated price elasticity in our demand model is negative, the counterfactual scenario predicts slightly lower gasoline sales in every province.
+
+Across provinces, the estimated percentage change in monthly sales (Diff_Percent) ranges narrowly between -0.115% and -0.117%, reflecting the relatively small impact of a one-time price change on short-run gasoline consumption. Provinces with large markets, such as Ontario, Alberta, and British Columbia, show the largest numerical reductions in litres sold (e.g., Ontario: about −160,988 litres), but the relative reduction is similar across all regions. Smaller provinces (e.g., Northwest Territories or Prince Edward Island) display proportionally identical declines, but with smaller absolute magnitudes due to lower baseline consumption.

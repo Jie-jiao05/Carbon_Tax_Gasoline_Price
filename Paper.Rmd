@@ -1,12 +1,12 @@
 ---
-title: "How Does the Carney Administration’s Abolition of the Carbon Tax Affect Gasoline Prices and Consumption?"
+title: "How the Gasoline Market Responds to the Carney Administration’s Carbon Tax Abolition"
 subtitle: "An ARIMAX and Linear Regression-Based Evaluation Using Monthly Data from Canadian Provinces (Excluding Québec and Nunavut)"
 author: 
   - Shanjie Jiao
 thanks: "Code and data are available at: https://github.com/Jie-jiao05/Carbon_Tax_Gasoline_Price/tree/main."
 date: today
 date-format: long
-abstract: "This study evaluates how the abolition of the federal fuel carbon tax by the Carney Administration affects gasoline prices, fuel demand across Canadian provinces. Using monthly data from 2017 to 2025, we estimate a time series ARIMAX model for gasoline prices with crude oil prices, gasoline CPI, and carbon tax levels as external drivers. We then use a log consumption model with province fixed effects to measure the short run price elasticity of gasoline consumption. Counterfactual simulations suggest that maintaining the carbon tax would have raised gasoline prices by less than one cent per litre in most provinces and would have produced only very small changes in demand. As a result, we concluded the estimated impact on transportation emissions is limited. Overall, the findings indicate that short run gasoline market dynamics are shaped more by global crude oil conditions and household transportation needs than by the recent change in carbon tax policy. Canada policy should aim for a broader structural change to incentify more high tecn for more fuel-efficient or EV, to reduce the general demand to push down the gasolone price and greeenhouses emission. "
+abstract: "This study examines the conditional responses of gasoline prices and fuel consumption to the abolition of the federal fuel carbon tax under the Carney Administration across Canadian provinces. Using monthly data from 2017 to 2025, we estimate a pooled time-series price model with autoregressive errors to characterize gasoline price dynamics conditional on crude oil prices, carbon tax levels, and province fixed effects. We then estimate a log-linear gasoline consumption model with province fixed effects to measure the short-run conditional price responsiveness of fuel demand. Counterfactual simulations suggest that, holding other factors constant, maintaining the carbon tax would have raised gasoline prices by less than one cent per litre in most provinces and would have generated only very small short-run changes in gasoline consumption, reflecting highly inelastic demand. Consequently, the implied short-run impact on transportation-related emissions is limited.From a policy perspective, these results support reinstating the fuel carbon tax primarily as a revenue-generating instrument to help alleviate the fiscal burden of financing Canada’s green transition. At the same time, achieving meaningful emission reductions requires broader structural interventions, such as promoting fuel-efficient vehicles, electric vehicle adoption, and complementary transportation policies, rather than relying solely on short-run price-based measures."
 format:
   pdf:
     fig-pos: H
@@ -37,27 +37,22 @@ The abolition of the fuel carbon tax directly affects retail gasoline prices, wh
 ## Research Questions
 The purpose of this study is to evaluate how the Carney Administration’s abolition of the federal fuel carbon tax influences gasoline prices and how these price changes impact Canada gasoline price and consumption adjustment. And how does the removal of Carbon tax causes transportation related emissions shift. To guide the empirical analysis, the following research questions are examined. And will be answered at @sec-cf1 and @sec-cf2
 
-1. How did the abolition of the federal fuel carbon tax affect monthly retail gasoline prices in Canadian provinces that were subject to the federal fuel charge?
+1. How did consumer-level gasoline prices respond to the abolition of the federal fuel carbon tax, conditional on crude oil prices and province-specific factors?
 
-2. To what extent do changes in gasoline prices influence monthly fuel consumption across provinces once local economic conditions and climate factors are taken into account?
+2. How do changes in gasoline prices relate to monthly fuel consumption across Canada, once local economic conditions and climate factors are taken into account?
 
-These research paper aim to answer this question for a comprehensive assessment of the economic and environmental consequences of the carbon tax abolition and provide a structured basis for evaluating both observed and counterfactual outcomes.
+These research paper aim to answer this question for a comprehensive assessment of the economic and environmental consequences of the carbon tax abolition and provide a structured basis for evaluating both observed and counter factual outcomes.
 
 # Data
 ## Overview
-This study uses monthly provincial data from 2017 to 2025. The main variables include the federal carbon tax [@cra2025fuelcharge], retail gasoline prices [@statcan2025retailprices], the gasoline component of the Consumer Price Index[@statcan2025cpi], provincial gasoline sales quantity [@statcan2025fuelSales], monthly temperature and precipitation [@eccc2025climatenormals], crude oil price [@tradingeconomics2025crudeoil], and the number of registered vehicles [@statcan2025vehicleregistrations]. The cleaning process will be explained in @sec-outvar and @sec-prevar respect to each specific variable section. These data are taken from Statistics Canada, Natural Resources Canada, Environment and Climate Change Canada, and Trading Economics. Together, we utilize these data to capture the key economic, climate, and transportation factors necessary to evaluate how the removal of the federal carbon tax influences gasoline prices, consumption conditions, and gasoline consumption pattern.
+This study uses monthly provincial data from 2017 to 2025. The main variables include the federal carbon tax [@cra2025fuelcharge], retail gasoline prices [@statcan2025retailprices], provincial gasoline sales quantity [@statcan2025fuelSales], monthly temperature and precipitation [@eccc2025climatenormals], crude oil price [@tradingeconomics2025crudeoil], and the number of registered vehicles [@statcan2025vehicleregistrations]. Together, they form a monthly province-level panel dataset, where the unit of observation is a province–month. This structure allows us to capture key economic, climate, and transportation factors across time and across provinces, which is necessary to evaluate how the removal of the federal carbon tax influences retail gasoline prices, consumption conditions, and consumer behavior.
 
-## Exogenous Variable {#sec-outvar}
+## Dependent Variables
 
-### Price Model Exogenous Variable --- Gasoline Price
-The retail fuel price measures the monthly average sales price of fuel in each province or territory, expressed in cents per litre. The data come from Statistics Canada’s Monthly Average Retail Prices for Gasoline and Fuel Oil [@statcan2025retailprices]. 
+### Gasoline Price
+Retail gasoline prices measure the monthly average sales price of gasoline in each Canadian province and territory, expressed in cents per litre. The data are obtained from Statistics Canada’s Monthly Average Retail Prices for Gasoline and Fuel Oil [@statcan2025retailprices]
 
-For data cleaning, this paper take the reported stations in the Statistics Canada as provincial representatives. For the case, when a province has multiple station-level observations in a given month, we take the simple average of all available stations to construct a representative provincial value. For provinces with only one reported station adopt that value directly.
-
-Overall @fig-price-ca shows the monthly average gasoline price in Canada shows substantial variation between 2017 and 2025. Prices remained relatively stable between 2017 and early 2020, fluctuating around 110–130 cents per litre. A sharp decline occurred at the onset of the COVID-19 pandemic in 2020, followed by a rapid rebound beginning in late 2020. Prices then rose steeply throughout 2021 and peaked in mid-2022 at over 200 cents per litre. After this peak, gasoline prices gradually declined but continued to exhibit noticeable month-to-month volatility, settling between 140 and 170 cents per litre in 2023–2025.
-
-On the provincial level @fig-price-spe, all regions display broadly the same fluctuation pattern as the national average, with similar turning points across time. The highest recorded gasoline price was occurred in 2022-06, British Columbia reaches CAD225.3 cents per litre.
-
+The reported gasoline prices are recorded at the station level. To construct a representative provincial series, all available station-level observations within a province are averaged for each month. If only a single station observation is available for a province in a given month, that value is used directly. This procedure yields a consistent monthly provincial gasoline price series from January 2017 to September 2025. Figures @fig-price-ca and @fig-price-spe respectively present the national and provincial gasoline price series used in the analysis.
 ```{r}
 #| label: fig-price-ca
 #| fig-cap: Gasoline Price in Canada (General Case)
@@ -66,23 +61,39 @@ On the provincial level @fig-price-spe, all regions display broadly the same flu
 #| message: false
 
 
-# Ensure Date is in Date format 
 gas$Date <- as.Date(gas$Date)
 
-# Compute national average monthly gasoline price
-price_monthly <- gas %>%
+# National average monthly gasoline price
+gas_price_monthly <- gas %>%
   group_by(Date) %>%
-  summarise(Avg_Price = mean(Gasoline_Price, na.rm = TRUE))
+  summarise(Avg_Gasoline = mean(Gasoline_Price, na.rm = TRUE))
 
-# Plot
-ggplot(price_monthly, aes(x = Date, y = Avg_Price)) +
-  geom_line(color = "blue", size = 1) +
+# National average monthly crude oil price 
+oil_price_monthly <- gas %>%
+  group_by(Date) %>%
+  summarise(Avg_Crude = mean(Crude_Oil_Price, na.rm = TRUE))
+
+# Combine two series into one data frame
+price_compare <- gas_price_monthly %>%
+  left_join(oil_price_monthly, by = "Date")
+
+# Crude Oil vs Gasoline graph
+ggplot(price_compare, aes(x = Date)) +
+  geom_line(aes(y = Avg_Gasoline, color = "Gasoline Price"), size = 1) +
+  geom_line(aes(y = Avg_Crude, color = "Crude Oil Price"), size = 1) +
+  scale_color_manual(values = c("Gasoline Price" = "blue",
+                                "Crude Oil Price" = "red")) +
   labs(
-    title = "Monthly Average Gasoline Price in Canada (2017–2025)",
+    title = "Crude Oil Price vs Gasoline Price in Canada (2017–2025)",
     x = "Date",
-    y = "Gasoline Price"
+    y = "Price",
+    color = ""
   ) +
-  theme_minimal()
+  theme_minimal(base_size = 10) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
 
 ```
 
@@ -124,12 +135,10 @@ ggplot(gas_clean, aes(x = Date, y = Gasoline_Price, color = Province)) +
 
 ```
 
-### Sales Model Exogenous Variable --- Gasoline Sales Quantity
+### Gasoline Sales Quantity
 The gasoline sales quantity measures the total volume of fuel sold for road motor vehicles in each province, reported annually in units of one thousand litres. The data come from Statistics Canada’s Sales of fuel used for road motor vehicles, annual (x 1,000) [@statcan2025fuelSales].
 
-For data cleaning, since the original dataset provided was accounted in annual totals, to incorporate these data into a monthly time series model, each annual value was distributed across twelve months using a set of seasonally informed weights. For example, higher weights are assigned to months with traditionally higher gasoline consumption (Jun to Sept.). The resulting monthly series aligns with the frequency of other variables for a more robustic time series estimation.
-
-@fig-sale-pro is a annual gasoline sales by province, the trend over year is minor. But due to the overlarge data in Ontario, it makes plotting data from other provinces on the same linear axis would visually compress for provinces with lower sales. For example, data for the Yukon or Northwest Territories would appear almost horizontal at 0 line. To address this and preserve the relative differences between provinces, we used a logarithmic y-axis to create a clearer interpretation of trends across provinces with varying sales levels.
+Due to the original dataset provided was accounted in annual totals, to incorporate these data into a monthly time series model, each annual value was distributed across twelve months using a set of seasonally informed weights. For example, higher weights are assigned to months with traditionally higher gasoline consumption (Jun to Sept.). The resulting monthly series aligns with the frequency of other variables in the analysis. Figure @fig-sale-pro presents the resulting provincial gasoline sales series. Due to the substantially larger sales volume in Ontario, the vertical axis is displayed on a natural logarithmic scale to ensure comparability across provinces.
 ```{r}
 #| label: fig-sale-pro
 #| fig-cap: Gasoline Sales in Canada by Province
@@ -167,11 +176,12 @@ ggplot(annual_sales, aes(x = Year, y = Annual_Sales, color = Province, group = P
   )
 
 ```
-## Endogenous Variable {#sec-prevar}
 
+## Explanatory Policy Variables
 ### Carbon Tax
-The provincial carbon tax is used as the key endogenous policy variable in the price model. It represents the per-litre fuel charge applied to gasoline under the federal carbon pricing system from 2019 until its removal by the Carney Administration in early 2025. For some certain provinces, such as British Columbia, do not follow the federal fuel charge, but operate their own provincial carbon-pricing systems. As a result, their gasoline tax rates differ from the federal schedule and we conduct a transformation to fit in. The values shown in @tbl-tax-ca represent the applicable fuel charge rates for each province in every fiscal year (April to neaxt year March).
+The carbon tax is included in the price model as an exogenous policy variable. It represents the per-litre fuel charge applied to gasoline under Canada’s carbon pricing framework from 2019 until its removal by the Carney Administration in early 2025. This tax schedule is determined by government legislation and follows a pre-announced path, making it independent of short-run gasoline price fluctuations.
 
+For some certain provinces, such as British Columbi, do not follow the federal fuel charge, but operate their own provincial carbon-pricing systems. In these cases, provincial gasoline tax rates are converted into a comparable per-litre measure to ensure consistency across provinces. The values shown in @tbl-tax-ca represent the applicable fuel charge rates for each province in every fiscal year.
 ```{r}
 #| label: tbl-tax-ca
 #| echo: false
@@ -184,14 +194,10 @@ The provincial carbon tax is used as the key endogenous policy variable in the p
 library(tidyverse)
 library(kableExtra)
 
-# ------------------------------------------------------------
-# 1. Load dataset
-# ------------------------------------------------------------
+
 fuel_summary <- read_csv("Fuel_Charge_Table.csv") %>%
   
-  # ------------------------------------------------------------
-  # 2. Convert province names to official two-letter abbreviations
-  # ------------------------------------------------------------
+
   mutate(
     Province = recode(Province,
       "Ontario" = "ON",
@@ -210,9 +216,6 @@ fuel_summary <- read_csv("Fuel_Charge_Table.csv") %>%
     )
   )
 
-# ------------------------------------------------------------
-# 3. Build formatted table
-# ------------------------------------------------------------
 fuel_summary %>%
   kbl(
     digits = 2,
@@ -225,123 +228,17 @@ fuel_summary %>%
 
 ```
 
-### CPI:Gasoline
-The gasoline Consumer Price Index comes from Statistics Canada’s monthly CPI database [@statcan2025cpi]. This dataset provides a very comprehensive measure of CPI changes across a wide range of category for each province. Since this study focuses specifically on behavioural responses to gasoline price changes, so only the gasoline-specific CPI series is retained.
+## Control Variables
 
-@tbl-CPI-ca summarizes the average gasoline-specific CPI for each province from 2017 to 2025, capturing long-run differences in gasoline purchasing power across regions. Provinces such as British Columbia and Ontario exhibit the highest average CPI levels, indicating consistently stronger upward pressure on gasoline prices or higher underlying cost structures. In contrast, Yukon, Prince Edward Island, and the Northwest Territories show the lowest averages, suggesting comparatively slower growth in gasoline price levels over the period. 
-
-
-```{r}
-#| label: tbl-CPI-ca
-#| tbl-cap: CPI of Gasoline in Canada by Province
-#| echo: false
-#| message: false
-#| warning: false
-#| tbl-height: 5
-#| fig-width: 6
-
-cpi_avg <- gas %>%
-  filter(Date >= as.Date("2017-01-01"),
-         Date <= as.Date("2025-12-31")) %>%
-  group_by(Province) %>%
-  summarise(
-    Avg_CPI_Gasoline_2017_2025 = round(mean(CPI_Gasoline, na.rm = TRUE), 2)
-  ) %>%
-  arrange(Province)
-
-
-cpi_avg %>%
-  kbl(
-    digits = 2,
-    align = "lc",
-    col.names = c("Province", "Avg Gasoline CPI")
-  ) %>%
-  kable_classic(full_width = FALSE, html_font = "Times New Roman") %>%
-  kable_styling(
-    position = "center",
-    font_size = 10
-  )
-
-```
 ### Quantity of Vehicle Registered
-The quantity of vehicle registered refers to the total road motor vehicles(include all weight range) officially registered in a province registration system within a given year and it is accumulative [@statcan2025vehicleregistrations]. The provinces with the minimum and maximum registered vehicles as of December 2024 are reported in @tbl-veh-ca. By discover the change rate in registered vehicle, we can observe the quatity of car related to gasoline consumption.
- 
-```{r}
-#| label: tbl-veh-ca
-#| tbl-cap: Min and Max Registered Vehicle in Canada
-#| echo: false
-#| message: false
-#| warning: false
+The quantity of vehicle registered refers to the total road motor vehicles(include all weight range) officially registered in a province registration system within a given year and it is accumulative [@statcan2025vehicleregistrations]. This variable serves as a proxy for long-run transportation demand and vehicle stock.
 
-vehicle_summary <- gas %>%
-  filter(Date == as.Date("2024-12-01")) %>%   
-  select(Province, Vehicles_Reg) %>% 
-  summarise(
-    Min_Registered = min(Vehicles_Reg, na.rm = TRUE),
-    Min_Province = Province[which.min(Vehicles_Reg)],
-    Max_Registered = max(Vehicles_Reg, na.rm = TRUE),
-    Max_Province = Province[which.max(Vehicles_Reg)]
-  )
-
-vehicle_summary %>%
-  kbl(
-    digits = 0,
-    align = "lccc"
-  ) %>%
-  add_header_above(c("Vehicle Registration Summary (Dec 2024)" = 4)) %>%
-  kable_classic(full_width = FALSE, html_font = "Times New Roman") %>%
-  kable_styling(position = "center", font_size = 10)
-
-
-```
 
 ### Crude Oil Price
-Our crude oil price are sourced from organization Trading Economic [@tradingeconomics2025crudeoil]. Since crude oil is the only raw material for gasoline, it will significantly affects the price of the finished gasoline in the market. @fig-curde shows changes in crude oil and gasoline price under same time frame. As expected, Gasoline price are majorly caused by the shift in crude oil price in global. We estimated that the revenue earned by gasoline production firm is approximately $60/liter (excluding cost like, labour, transportion, and etc.)
-```{r}
-#| label: fig-curde
-#| echo: false
-#| message: false
-#| warning: false
-#| fig-cap: Change in Crude Oil Price with Gasoline
-
-gas$Date <- as.Date(gas$Date)
-
-# National average monthly gasoline price
-gas_price_monthly <- gas %>%
-  group_by(Date) %>%
-  summarise(Avg_Gasoline = mean(Gasoline_Price, na.rm = TRUE))
-
-# National average monthly crude oil price 
-oil_price_monthly <- gas %>%
-  group_by(Date) %>%
-  summarise(Avg_Crude = mean(Crude_Oil_Price, na.rm = TRUE))
-
-# Combine two series into one data frame
-price_compare <- gas_price_monthly %>%
-  left_join(oil_price_monthly, by = "Date")
-
-# Crude Oil vs Gasoline graph
-ggplot(price_compare, aes(x = Date)) +
-  geom_line(aes(y = Avg_Gasoline, color = "Gasoline Price"), size = 1) +
-  geom_line(aes(y = Avg_Crude, color = "Crude Oil Price"), size = 1) +
-  scale_color_manual(values = c("Gasoline Price" = "blue",
-                                "Crude Oil Price" = "red")) +
-  labs(
-    title = "Crude Oil Price vs Gasoline Price in Canada (2017–2025)",
-    x = "Date",
-    y = "Price",
-    color = ""
-  ) +
-  theme_minimal(base_size = 10) +
-  theme(
-    plot.title = element_text(hjust = 0.5, face = "bold")
-  )
-
-
-```
+Our crude oil price are sourced from organization Trading Economic [@tradingeconomics2025crudeoil]. As crude oil is the primary input in gasoline production, this variable captures short-run upstream cost pressures that affect retail gasoline prices uniformly across provinces. @fig-price-ca shows changes in crude oil and gasoline price under same time frame.
 
 ### Climate and Precipitation
-During extreme heat, cold, or rainy weather, people tend to use public transportation or private vehicles, which result in increasing gasoline consumption. Therefore, we incorporate these two variables into our model as exogenous variables. Our temperature and precipitation data are sourced from the Canada Environment and Climate Change website [@eccc2025climatenormals].Due to limited data availability and to minimize the confounding effects of weather-driven behavioural changes(for instance, extreme weather may reduce overall mobility, but for some people might keep going out but choose transporatio method), we incorporate only a single representative year of climate observations, using each province’s 2024 average temperature and total precipitation as fixed exogenous inputs in the model. @fig-cli illustrate difference province with their weather climate condition
+Climate variables are included to account for weather-related variation in driving behavior and fuel consumption. Average temperature and total precipitation data are obtained from Environment and Climate Change Canada [@eccc2025climatenormals]. But due to data availability constraints, each province’s 2024 average temperature and total precipitation are used as fixed climate controls. Figure @fig-cli summarizes cross-province differences in climate conditions.
 ```{r}
 #| label: fig-cli
 #| echo: false
@@ -423,49 +320,54 @@ ggplot(climate_2024, aes(x = Date)) +
 ```
 
 # Model
-## Price Model --- ARIMAX
-Our retail gasoline price series is recorded monthly, and displays clear time dependent patterns in @fig-price-ca. These features imply that a simple regression model would produce biased or inefficient estimates, since the explanatory variables would be confounded with the inherent serial dependence in the price series. For this reason, the ARIMAX model is adopted. For ARIMAX this model preserves the ARIMA structure to capture the dynamic evolution of gasoline prices through explicit modelling of autoregressive and moving average components, which ensures that the estimated effects of external factors are not distorted by time series dependence. At the same time, the model enable to incorporates relevant exogenous variables such as crude oil prices, the federal carbon tax, and the gasoline component of the Consumer Price Index, allowing the model to separate tax policy driven price movements from broader market fluctuations. In this way, ARIMAX combines the interpretability of a traditional regression with the capacity to represent time series dynamics, making it well suited for analysing gasoline price formation in the presence of policy shocks. The interpretation relative to each coefficient will be illustrated in @sec-int.
+## Supply-Side Price Model (ARIMAX)
+Our retail gasoline price series is recorded at a monthly frequency and exhibit strong temporal dependence in @fig-price-ca. In this case as it will violate the independence assumption required for general linear regression models. Estimating by using a simple regression without accounting for this time-series structure would therefore lead to inefficient estimates and potentially misleading statistical inference.
 
-### Price Model Assumption
-1.  Gasoline prices follow a time dependent structure where past price movements influence current prices.
+For this reason, the ARIMAX model is adopted to construct a reduced-form supply- side price model. The ARIMAX framework explicitly models autoregressive and moving average components in the error process, allowing past price movements to influence current prices while preserving a regression structure for observed explanatory variables. This makes the model well suited for capturing short-run gasoline price dynamics in the presence of persistent shocks. In addition, the ARIMAX model allows key market and policy variables as exogenous regressors. This enables the analysis to condition on observable cost and policy factors while separating their associations with gasoline prices from underlying time-series dynamics. 
 
-2.	External factors such as carbon tax, crude oil costs, and CPI gasoline are independent and measurable effects on monthly gasoline prices.
+The objective of this model is not to establish a causal treatment effect of the carbon tax, but to examine how gasoline prices respond dynamically to tax removal and market changes and to construct counterfactual price paths under alternative tax scenarios.
 
-3.	No strong or systematic seasonal pattern in gasoline prices, consistent with our exploratory analysis.
+### Model Assumption
+1.  Time Depedence: Gasoline prices follow a time dependent structure where past price movements influence current prices.
 
-4.	Relationship between gasoline prices and the included covariates is stable across provinces after controlling for province fixed effects.
+2.	Conditional exogeneity: Policy and market variables, including the carbon tax and crude oil prices, are treated as exogenous with respect to short-run gasoline price dynamics, allowing the model to estimate conditional price responses rather than causal effects.
 
-5.	Error term is stationary and serially correlated only through the ARIMA component.
+3.	Seasonality: Gasoline prices do not display strong deterministic seasonal patterns. Any remaining seasonal dependence is captured through the stochastic seasonal components of the ARIMA error process
 
-### Price Model Specification
+4. Common Slopes: The relationship between gasoline prices and the included covariates is assumed to be common across provinces, while persistent differences in baseline price levels are captured by province fixed effects.
+
+5. Error Structure: Error term is stationary and serially correlated only through the ARIMA component.
+
+### Model Specification
 The model takes the following form:
 
 ```{=latex}
+
 \begin{align}
 \log(\text{GasolinePrice}_{t,p})
-  &= \beta_{0,p}
-   + \beta_{1,p}\,\text{Tax}_{t,p}
-   + \beta_{2,p}\,\text{CrudeOilPrice}_{t}
-   + \beta_{3,p}\,\text{CPI\_Gasoline}_{t,p}
+  &= \alpha_{p}
+   + \beta_{1}\,\text{Tax}_{t,p}
+   + \beta_{2}\,\text{CrudeOilPrice}_{t}
    + \varepsilon_{t,p}, \tag{1}\\[0.4em]
 \varepsilon_{t,p}
-  &\sim \text{ARIMA}\bigl(p_p,d_p,q_p\bigr)
-      \times \bigl(P_p,D_p,Q_p\bigr)_{12}, \tag{2}\\[0.4em]
-u_{t,p} &\sim \text{Normal}(0,\sigma_p^{2}) .
+  &\sim \text{ARIMA}\bigl(p,d,q\bigr)
+      \times \bigl(P,D,Q\bigr)_{12}, \tag{2}\\[0.4em]
+u_{t,p} &\sim \text{Normal}(0,\sigma^{2}) .
 \tag{3}
 \end{align}
+
 ```
 
 \begin{itemize}
   \item \(p\): province / territory index.
   \item \(t\): monthly time index from January 2017 to September 2025.
-  \item \(\text{GasolinePrice}_{t,p}\): average retail gasoline price (cents per litre) in month \(t\) and province \(p\); in the model we use its logarithm \(\log(\text{GasolinePrice}_{t,p})\) to stabilise variance and interpret coefficients approximately as percentage effects.
-  \item \(\text{Tax}_{t,p}\): federal carbon fuel charge in cents per litre for month \(t\) and province \(p\).
-  \item \(\text{CrudeOilPrice}_{t}\): benchmark crude oil price in month \(t\) , common across provinces.
-  \item \(\text{CPI\_Gasoline}_{t,p}\): gasoline component of the Consumer Price Index in month \(t\) and province \(p\), capturing broader price-level movements.
-  \item \(\beta_{0,p},\dots,\beta_{3,p}\): province-specific regression coefficients measuring how log gasoline prices respond to carbon tax, crude oil prices and gasoline CPI in province \(p\).
-  \item \(\varepsilon_{t,p}\): regression residual for province \(p\) after removing the effect of the exogenous variables; it follows a province-specific seasonal ARIMA process \(\text{ARIMA}(p_p,d_p,q_p)\times(P_p,D_p,Q_p)_{12}\) with 12-month seasonality, where the orders \((p_p,d_p,q_p,P_p,D_p,Q_p)\) are selected by \texttt{auto.arima} separately for each province.
-  \item \(u_{t,p}\): zero-mean Gaussian white-noise shocks driving the ARIMA error process in province \(p\), with variance \(\sigma_p^{2}\).
+  \item \(\text{GasolinePrice}_{t,p}\): average retail gasoline price (cents per litre) in month \(t\) and province \(p\); in the model we use its logarithm \(\log(\text{GasolinePrice}_{t,p})\) to stabilise variance and interpret coefficients approximately as percentage changes.
+  \item \(\text{Tax}_{t,p}\): carbon fuel charge in cents per litre for month \(t\) and province \(p\).
+  \item \(\text{CrudeOilPrice}_{t}\): benchmark crude oil price in month \(t\), common across provinces.
+  \item \(\alpha_{p}\): province fixed effect capturing time-invariant differences in baseline gasoline price levels across provinces.
+  \item \(\beta_{1},\beta_{2}\): common regression coefficients measuring the average conditional response of log gasoline prices to the carbon tax and crude oil prices, respectively.
+  \item \(\varepsilon_{t,p}\): regression residual for province \(p\) after removing the effect of the covariates and province fixed effects; it follows a seasonal ARIMA process \(\text{ARIMA}(p,d,q)\times(P,D,Q)_{12}\) capturing serial dependence in monthly gasoline prices.
+  \item \(u_{t,p}\): zero-mean Gaussian white-noise shocks driving the ARIMA error process, with variance \(\sigma^{2}\).
 \end{itemize}
 
 ```{r}
@@ -477,99 +379,50 @@ library(lubridate)
 library(forecast)
 library(tidyr)
 library(purrr)
-gas_clean <- gas %>%
-  mutate(
-    Date     = as.Date(Date),
-    Province = trimws(Province)
-  ) %>%
 
-  filter(Province != "") %>%
-  
-  filter(Date >= as.Date("2017-01-01"),
-         Date <= as.Date("2025-09-01")) %>%
- 
-  filter(!Province %in% c("Quebec", "Nunavut")) %>%
+library(dplyr)
+library(nlme)
+library(tidyr)
+
+panel <- gas_clean %>%
+  select(Province, Date, Gasoline_Price, Tax_cents_per_litre, Crude_Oil_Price) %>%
+  drop_na() %>%
+  mutate(
+    Province = factor(Province),
+    ln_price = log(Gasoline_Price),
+    tnum     = as.numeric(Date)
+  ) %>%
   arrange(Province, Date)
 
+fit_price_pooled <- gls(
+  ln_price ~ Tax_cents_per_litre + Crude_Oil_Price + Province,
+  data = panel,
+  correlation = corAR1(form = ~ tnum | Province),
+  method = "REML"
+)
 
-gas_model <- gas_clean %>%
-  select(Province, Date,
-         Gasoline_Price,
-         Tax_cents_per_litre,
-         Crude_Oil_Price,
-         CPI_Gasoline) %>%
-  drop_na()
-
-# 2.  ARIMAX”model
-#ARIMA(p,d,q)(P,D,Q)[12]
-
-fit_arimax_one_prov <- function(df_prov){
-
-  df_prov <- df_prov %>% arrange(Date)
-
-  y <- log(df_prov$Gasoline_Price)
-
-  xreg <- as.matrix(df_prov %>%
-                      transmute(
-                        Tax_cents_per_litre,
-                        Crude_Oil_Price,
-                        CPI_Gasoline
-                      ))
-
-  fit <- auto.arima(
-    y,
-    xreg      = xreg,
-    seasonal  = TRUE,
-    stepwise  = FALSE,
-    approximation = FALSE
-  )
-
-  return(fit)
-}
-
-
-# by province
-
-prov_list <- split(gas_model, gas_model$Province)
-
-price_models <- map(prov_list, fit_arimax_one_prov)
-
-# see on
-price_models[["Ontario"]]
-
-# residual
-forecast::checkresiduals(price_models[["Ontario"]])
-
-# for each prof coef unlock it：
-#coef_table <- map(price_models, coef) %>%
-#  purrr::imap_dfr(~{
-#    tibble(
-#      Province = .y,
-#      term     = names(.x),
-#      estimate = as.numeric(.x)
-#    )
-#  })
-
-#coef_table
 
 
 ```
 
+## Demand-Side Consumption Model (Linear Regression)
+For Sales Quantity model we deploy a Linear regression model. The distribution of monthly sales appears approximately normal and shows limited seasonal variation in @fig-sale-pro indicate that gasoline consumption does not exhibit strong  cyclical patterns, which suggests that more complex time-series structures. 
 
-## Consumption Model --- Linear Regression
-For Sales Quantity model we deploy a Linear regression model. The distribution of monthly sales appears approximately normal and shows limited seasonal variation in @fig-sale-pro indicate that gasoline consumption does not exhibit strong  cyclical patterns, which suggests that more complex time-series structures. In addition, the relationship between sales quantity and its key determinants—gasoline price, average temperature, precipitation, and vehicle registrations—follows a stable and interpretable form that is well captured by a linear model.
+This model utilizes gasoline sales along with a series of key influencing factors, which include retail gasoline prices, average temperature, precipitation, and vehicle registration volume. These variables enter the specification in a stable and economically interpretable manner, consistent with standard demand theory. The estimated coefficients are interpreted as short-run demand responses, conditional on observed prices, weather conditions, vehicle stock, and province fixed effects. In particular, the price coefficient reflects how gasoline consumption varies with changes in retail prices under the assumption that prices are predetermined with respect to contemporaneous consumption decisions. And is for a more transparent and interpretable purpose of short-run gasoline demand behavior and price sensitivity.
 
 
-### Consumption Model Assumption
-1.  Linearity: The expected value of monthly gasoline sales is assumed to be a linear function of gasoline price, temperature, precipitation, and the number of registered vehicles. 
+### Model Assumption
+1. Linearity: The expected value of monthly gasoline sales is assumed to be a linear function of gasoline price, temperature, precipitation, and the number of registered vehicles. 
 
-2.  Independence: Monthly observations are assumed to be independent after controlling for the included predictors.
+2. Independence: Monthly observations are assumed to be independent after controlling for the included predictors.
 
-3.  Homoscedasticity: The variance of the regression residuals is assumed to remain constant across all levels of the predictors. 
+3. Homoscedasticity: The variance of the regression residuals is assumed to remain constant across all levels of the predictors. 
 
-4.  Normality of Residuals: The residuals from the regression model are assumed to follow an approximately normal distribution. 
+4. Normality of Residuals: The residuals from the regression model are assumed to follow an approximately normal distribution. 
+
+5. Retail gasoline prices are assumed to be predetermined at the monthly frequency with respect to contemporaneous gasoline consumption shocks. Conditional on observed prices, weather conditions, vehicle stock, and province fixed effects, unobserved demand shocks are assumed to affect prices over longer horizons.
 	
-### Consumption Model Specification
+### Model Specification
 ```{=latex}
 \[
 \begin{aligned}
@@ -577,21 +430,24 @@ For Sales Quantity model we deploy a Linear regression model. The distribution o
  &= \alpha_p 
     + \beta_1 \log(\text{GasolinePrice}_{t,p})
     + \beta_2 \,\text{AvgTemp}_{t,p}
-    + \beta_3 \log(\text{VehiclesReg}_{t,p})
-    + u_{t,p},
+    + \beta_3 \,\text{Precip}_{t,p}
+    + \beta_4 \log(\text{VehiclesReg}_{t,p})
+    + u_{t,p}.
 \end{aligned}
 \]
 ```
 
 \begin{itemize}
-    \item $\text{Sales}_{t,p}$: monthly gasoline sales quantity in province $p$ at time $t$.
-    \item $\text{GasolinePrice}_{t,p}$: monthly average retail gasoline price.
-    \item $\text{AvgTemp}_{t,p}$: average monthly temperature, capturing weather-related variation in driving activity.
-    \item $\text{VehiclesReg}_{p}$: total registered vehicles in province $p$, treated as a time-invariant indicator of underlying transportation demand.
-    \item $\alpha_{p}$: province fixed effect capturing persistent differences in gasoline demand across provinces.
-    \item $u_{t,p}$: regression error term.
+    \item $\text{Sales}_{t,p}$: monthly gasoline sales quantity in province $p$ at time $t$; the model uses $\log(\text{Sales}_{t,p})$ as the dependent variable.
+    \item $\text{GasolinePrice}_{t,p}$: monthly average retail gasoline price in province $p$ at time $t$; the model uses $\log(\text{GasolinePrice}_{t,p})$.
+    \item $\text{AvgTemp}_{t,p}$: average monthly temperature in province $p$ at time $t$, capturing weather-related variation in driving activity.
+    \item $\text{Precip}_{t,p}$: total monthly precipitation in province $p$ at time $t$, capturing additional weather-related effects on gasoline consumption.
+    \item $\text{VehiclesReg}_{p}$: total number of registered vehicles in province $p$, treated as a time-invariant indicator of underlying transportation demand.
+    \item $\alpha_{p}$: province fixed effect capturing persistent differences in baseline gasoline consumption across provinces.
+    \item $u_{t,p}$: regression error term capturing unobserved short-run variation in gasoline consumption.
     \item \textbf{Reference group}: Alberta.
 \end{itemize}
+
 
 ```{r}
 #| echo: false
@@ -600,242 +456,231 @@ For Sales Quantity model we deploy a Linear regression model. The distribution o
 library(dplyr)
 library(lubridate)
 library(broom)
+library(tidyr)
 
-# ⃣ Clean + keep variables 
 demand_data <- gas %>%
-  mutate(
-    Date     = as.Date(Date),
-    Province = trimws(Province)
-  ) %>%
-  filter(Province != "",
-         Date >= as.Date("2017-01-01"),
-         Date <= as.Date("2025-09-01"),
-         !Province %in% c("Quebec", "Nunavut")) %>%
-  select(Province, Date,
-         Sale_quant,
-         Gasoline_Price,
-         AvgTemp_C,
-         Vehicles_Reg) %>%
-  drop_na() %>%
-  mutate(
-    ln_sales   = log(Sale_quant),
-    ln_price   = log(Gasoline_Price),
-    ln_veh_reg = log(Vehicles_Reg)
-  )
-
-
-demand_fit <- lm(
-  ln_sales ~ ln_price + AvgTemp_C + ln_veh_reg + factor(Province),
-  data = demand_data
-)
-
-# ⃣ Model summary + tidy table (estimates, s.e., p-values)
-summary(demand_fit)
-#demand_coef <- tidy(demand_fit)
-#demand_coef
-
-```
-
-```{r}
-#| label: fig-res
-#| echo: false
-#| message: false
-#| warning: false
-#| fig-cap: Assumption Check for Linear Regression
-par(mfrow = c(2, 2))
-plot(demand_fit)
-par(mfrow = c(1, 1))
-```
-@fig-res presents the diagnostic checks for the Price Model The Residuals vs Fitted plot shows no clear curvature, indicating that the linear functional form is appropriate for the model. The Q–Q Residual plot aligns closely with the 45-degree reference line, suggesting that the error terms are approximately normally distributed with only minor tail deviation. Meanwhile, the Scale–Location plot reveals a generally horizontal trend but with slight differences in residual spread across fitted values, but consider this Price model is a general model rather than for a specific province, so there exist a very mild heteroscedasticity issue. Finally, the Residuals vs Leverage plot shows most points well below the Cook’s distance threshold, implying the absence of influential observations that could bias coefficient estimates. Overall, the regression model satisfies the main linearity and normality assumptions, with only a small concern regarding variance consistency.
-
-# Result 
-## Model Estimation Result and Interpretation {#sec-int}
-### Price Model Interpretation 
-Since our model are build for each province separately, for interpretation we will select Ontario to be a example for coefficient interpretation. Firstly, our model result in P-value of 0.7418 which indicates the residuals behave like white noise, giving high confidence that the ARIMAX model sufficiently accounts for time dependence. Our ARIMAX is be determined as ARIMAX(1,0,2). The estimated AR(1) coefficient (0.9283) is strongly positive and highly significant, indicating that gasoline prices are highly persistent over time—current prices are strongly influenced by prices in the previous month, which is consistent with the well-known sticky adjustment of retail fuel markets. The two MA terms, −0.0801 and −0.3342, jointly capture short-run shock adjustments, suggesting that unexpected price innovations are gradually corrected over subsequent months rather than dissipating immediately.
-
-Turning to the exogenous carbon tax policy and market variables, the estimated coefficient on the carbon tax ($β$ = 0.0018) is positive, implying that increases in the per-litre federal fuel charge are transmitted into higher retail gasoline prices, although the magnitude suggests the impact is partial pass-through. Holding all other factors constant, a one-cent increase in the federal carbon tax is associated with approximately a 0.18% increase in retail gasoline prices. The crude oil price and CPI-Gasolone coefficient ($β$ = 0.0016 and $β$ = 0.0036) are also positive, reflecting that higher crude and CPI will tend to raise upstream wholesale costs and eventually increase retail pump prices. 
-
-### Price Model Counterfactual Analysis
-
-#### Set Up
-To quantify how the removal of the federal carbon tax affected provincial gasoline prices, we construct a counterfactual scenario using our province-specific ARIMAX price model. The ARIMAX framework models gasoline prices as a function of carbon tax, crude oil prices, gasoline CPI, and autoregressive seasonal dynamics. For the counterfactual, we keep all market variables (crude oil price and CPI) at their observed 2025 values and modify only the carbon-tax input. Since the federal carbon tax was removed beginning in April 2025, we reintroduce the pre-removal tax schedule into the model for all months from 2025-04 onward, while keeping earlier months unchanged. We then forecast the counterfactual price path by feeding the model a tax series that assumes the policy never ended. The difference between the predicted counterfactual price and the actual observed price isolates the marginal effect of the carbon-tax removal on retail gasoline prices.
-
-#### Result {#sec-cf1}
-```{r}
-#| echo: false
-
-library(dplyr)
-library(purrr)
-library(forecast)
-library(lubridate)
-
-gas_cf <- gas %>%
   mutate(
     Date     = as.Date(Date),
     Province = trimws(Province)
   ) %>%
   filter(
     Province != "",
-    !Province %in% c("Quebec", "Nunavut"),
     Date >= as.Date("2017-01-01"),
-    Date <= as.Date("2025-09-01")
+    Date <= as.Date("2025-09-01"),
+    !Province %in% c("Quebec", "Nunavut")
   ) %>%
   select(
     Province, Date,
+    Sale_quant,
     Gasoline_Price,
-    Tax_cents_per_litre,
-    Crude_Oil_Price,
-    CPI_Gasoline
+    AvgTemp_C,
+    Precip_mm,
+    Vehicles_Reg
   ) %>%
-  drop_na()
-
-# Counterfactual Tax：keep tax
-
-gas_cf <- gas_cf %>%
+  drop_na() %>%
   mutate(
-    Tax_cf = if_else(
-      Date >= as.Date("2025-04-01"),
-      # tax at 2024）
-      Tax_cents_per_litre[Date == as.Date("2024-03-01")][1],
-      Tax_cents_per_litre
-    )
+    ln_sales   = log(Sale_quant),
+    ln_price   = log(Gasoline_Price),
+    ln_veh_reg = log(Vehicles_Reg),
+    Province   = relevel(factor(Province), ref = "Alberta")
   )
 
+demand_fit <- lm(
+  ln_sales ~ ln_price + AvgTemp_C + Precip_mm + ln_veh_reg + factor(Province),
+  data = demand_data
+)
 
-#  remade
 
-fit_arimax_price <- function(df){
+#demand_coef <- tidy(demand_fit)
+#demand_coef
 
-  df <- df %>% arrange(Date)
-
-  y <- log(df$Gasoline_Price)
-
-  xreg_train <- as.matrix(df %>%
-                            transmute(
-                              Tax_cents_per_litre,
-                              Crude_Oil_Price,
-                              CPI_Gasoline
-                            ))
-
-  fit <- auto.arima(
-    y,
-    xreg = xreg_train,
-    seasonal = TRUE,
-    stepwise = FALSE,
-    approximation = FALSE
-  )
-
-  return(fit)
-}
-
-# Counterfactual Forecast Function
-
-price_cf_one_prov <- function(df){
-
-  df <- df %>% arrange(Date)
-
-  fit <- fit_arimax_price(df)
-
-  future_df <- df %>% filter(Date >= as.Date("2025-04-01"))
-
-  xreg_cf <- as.matrix(future_df %>%
-                         transmute(
-                           Tax_cents_per_litre = Tax_cf,
-                           Crude_Oil_Price,
-                           CPI_Gasoline
-                         ))
-
-  # Counterfactual Forecast
-  fc <- forecast(
-    fit,
-    xreg = xreg_cf,
-    h = nrow(future_df)
-  )
-
-  tibble(
-    Province          = df$Province[1],
-    Date              = future_df$Date,
-    Actual_Price      = future_df$Gasoline_Price,
-    CF_ln_Price       = as.numeric(fc$mean),
-    CF_Price          = exp(as.numeric(fc$mean)),
-    Price_Difference  = CF_Price - Actual_Price
-  )
-}
-
-#  all provinces
-
-prov_list <- split(gas_cf, gas_cf$Province)
-
-price_cf_results <- map_dfr(prov_list, price_cf_one_prov)
-
-head(price_cf_results, 6)
 ```
-The counterfactual analysis compares the observed 2025 gasoline prices against the prices that would have prevailed if the federal carbon tax had remained in place. Across all provinces, the differences between actual and counterfactual prices are small, typically within the range of about 2 to 5 cents per litre. Most provinces would have experienced slightly higher gasoline prices under the counterfactual scenario, indicating that the removal of the carbon tax lowered prices only modestly. For example, Alberta shows a counterfactual price that is higher by roughly 3.4 cents per litre compared with the actual price. This pattern suggests that the effect of carbon tax removal on gasoline prices is limited, and recent price movements are more strongly driven by broader factors such as crude oil markets and general cost conditions captured by CPI. The full counterfactual analysis table could be find in the attachments named "price_cf_results_full,csv".
+
+
+# Result 
+## Model Estimation Result and Interpretation {#sec-int}
+### Supply-Side Price Model (ARIMAX) Interpretation and Result
+
+
+```{r}
+#| eval: false
+#| include: false
+library(forecast)
+
+fit <- auto.arima(y, xreg = xreg, seasonal = TRUE)
+
+# non-seasonal (p,d,q)
+arimaorder(fit)
+# returns c(p=?, d=?, q=?)
+
+# seasonal order + period
+fit$arma
+# vector includes p q P Q and period info
+fit
+```
+The ARIMAX price model is not intended to identify a causal effect of the carbon tax. Instead, it is used to capture the dynamic response of gasoline prices to policy and market variables while accounting for serial dependence and seasonality in prices.
+
+Our ARIMAX is be determined as $\mathrm{ARIMAX}(1,0,1)(0,0,1)_{12}$. The estimated AR(1) coefficient (0.5553) is strongly positive and highly significant, indicating that gasoline prices are highly persistent over time—current prices, and are strongly influenced by prices in the previous month, which is consistent with the retail fuel market gradual adjustment. For MA(1) term of 0.5103, it captures the immediate correction of unanticipated price shocks. The results show that unexpected fluctuations in gasoline prices are partially offset in the next period, rather than being completely absorbed in the current period. In addition, the seasonalMA(1)12 coefficient (−0.1803) reflects seasonal shock adjustment is at the annual frequency.
+
+@tbl-price-pooled reports estimates from the pooled price model, which relates log retail gasoline prices to the carbon tax, crude oil prices, and province fixed effects, with Alberta serving as the reference province. The coefficients describe conditional price responses rather than causal policy effects. The estimated coefficient on the carbon tax(0.091) represents a semi-elasticity, as gasoline prices enter the model in logarithms while the tax is measured in cents per litre. The estimate implies that a one-cent increase in the carbon tax is associated with an approximately 0.9 percent increase in retail gasoline prices, holding crude oil prices and province fixed effects constant. 
+```{r}
+#| label: tbl-price-pooled
+#| echo: false
+#| message: false
+#| warning: false
+#| tbl-cap: Pooled Price Model Coefficients (GLS)
+
+
+tab <- as.data.frame(summary(fit_price_pooled)$tTable)
+tab <- cbind(Term = rownames(tab), tab)
+rownames(tab) <- NULL
+
+# Rename columns
+names(tab) <- c("Term", "Estimate", "Std. Error", "t value", "p value")
+
+# Plain LaTeX table, no extra macros
+knitr::kable(
+  tab,
+  format = "latex",
+  digits = 4,
+  booktabs = TRUE,
+  longtable = FALSE
+)
+
+```
+While this does not imply an exact one-cent-for-one-cent increase in prices in levels, the magnitude indicates substantial short-run pass-through of the tax to consumer prices, suggesting that most of the tax burden is borne by consumers rather than absorbed by suppliers. In addition to tax effects, crude oil prices strongly influence gasoline prices, with a one-unit increase in crude oil prices associated with an approximately 0.85 percent rise in retail gasoline prices. At the same time, province fixed effects indicate persistent baseline differences relative to Alberta, with gasoline prices in Ontario averaging about 10 percent higher after controlling for taxes and oil prices.
+
+
+###  Counterfactual Analysis
+
+#### Set Up
+We construct counterfactual gasoline price paths under an alternative carbon tax schedule following the 2025 policy change. The counterfactual is conditional: crude oil prices are held at their observed values, and only the tax path is altered. For each province, we use the fitted ARIMAX model to generate dynamic predictions over the post-policy period under (i) the observed tax schedule and (ii) a counterfactual schedule in which the carbon tax remains in place. The monthly counterfactual gap is computed as the difference between the counterfactual and observed predicted log prices, converted into percentage or cents-per-litre differences for interpretation.
+
+The counterfactual analysis is conducted over the post-policy period April 2025 to September 2025. We set April 1, 2025 as the policy change date and define the pre-policy period as January 2017 to March 2025. The observed tax path $\text{Tax}^{\text{obs}}_{t,p}$ uses the realized fuel charge after April 2025, while the counterfactual path $\text{Tax}^{\text{cf}}_{t,p}$ holds the carbon tax fixed at each province’s last observed pre-removal rate from March 2025 for all months from April 2025 onward.
+
+
+$$
+\begin{aligned}
+\Delta_{t,p}
+&=
+\mathbb{E}\!\left[\log(P_{t,p}) \mid \text{Tax}^{\text{cf}}_{t,p}\right]
+-
+\mathbb{E}\!\left[\log(P_{t,p}) \mid \text{Tax}^{\text{obs}}_{t,p}\right], \\
+\Delta^{\%}_{t,p}
+&=
+100\left(\exp(\Delta_{t,p}) - 1\right)
+\end{aligned}
+$$
+
+$\log(P_{t,p})$: log retail gasoline price in province $p$ at month $t$,
+$\text{Tax}^{\text{obs}}_{t,p}$: observed carbon tax
+$\text{Tax}^{\text{cf}}_{t,p}$: counterfactual tax under the alternative policy scenario.
+
+
+#### Result {#sec-cf1}
+
+$$
+\begin{aligned}
+\Delta_{t,p}
+&=
+\hat{\beta}_{\text{tax}}
+\left(\text{Tax}^{\text{cf}}_{t,p}
+-
+\text{Tax}^{\text{obs}}_{t,p}\right)=0.0091 \times 17.61=
+0.1603, \\
+\Delta^{\%}_{t,p}
+&=
+100\left(\exp(0.1603)-1\right)
+\approx
+17.38\%
+\end{aligned}
+$$
+
+The counterfactual analysis implies an average gasoline price difference of 17.38 percent in the post-policy period. This effect is identical across provinces because the pooled price model imposes a common tax pass-through coefficient, and the carbon tax removal represents a uniform policy shock of 17.61 cents per litre across all provinces at same time. Provincial fixed effects will affect baseline price levels but do not alter the magnitude of the tax-induced price change, resulting in the same counterfactual percentage difference for each province.
+
 
 ## Sales Model Interpretation
-The model results show that gasoline price, temperature, and vehicle registrations are all statistically significant predictors of gasoline sales. With a p-value < 2.2e-16 for the overall F-test, we reject the null hypothesis that gasoline sales are unrelated to these explanatory variables. The model also achieves an Adjusted R-squared of 0.9978, indicating that approximately 99.78% of the variation in log gasoline sales is explained by the predictors included in the regression.
+```{r}
+#| echo: false
 
-The elasticity for ln_Price is 0.0319 which indicates by holding all else constant, a 1% increase in gasoline price leads to an estimated 0.0324% increase in gasoline sales. And higher average temperature is linked to a noticeable rise in sales, suggesting that warmer conditions can encourage more driving activity, each 1°C increase in monthly temperature is associated with roughly a 1.5% rise in gasoline sales, while other variables remain unchanged. In contrast, a larger number of registered vehicles slightly reduces monthly fuel sales after controlling for other factors, it tends to 0.38% decrease in gasoline consumption with one percent rise in registered vehilces. This condition might reveals that older cars are being replaced with more fuel-efficient or EVS and lead to a lower consumption. The provincial indicators are also highly significant and capture structural differences in driving patterns and baseline fuel consumption cross regions. Provinces such as New Brunswick, Manitoba and Saskatchewan show lower average gasoline sales relative to the reference group(Alberta), whereas Ontario are $e^(1.2525)$ which is approximately 250% higher than Alberta. 
+summary(demand_fit)
+```
+
+The estimated demand model relates monthly gasoline sales to prices, weather conditions, vehicle stock, and province fixed effects. Because both gasoline sales and prices enter in logarithms, the coefficient on price will be interpreted as a short-run price elasticity of demand, conditional on observed controls.
+
+The model results show that gasoline price, temperature, and vehicle registrations are statistically significant predictors of gasoline sales. With an overall p-value of $p < 2.2 \times 10^{-16}$, we reject the null hypothesis that gasoline sales are unrelated to the included explanatory variables. The model also achieves an adjusted $R^2$ of $0.9978$, indicating that approximately $99.78%$ of the variation in log gasoline sales is explained by the regression.
+
+The coefficient on log gasoline price is 0.028 (p = 0.048), which is interpreted as a short-run price elasticity of gasoline demand conditional on observed controls. Specifically, a 1% increase in gasoline prices is associated with a 0.028% change in monthly gasoline consumption, holding temperature, precipitation, vehicle registrations, and province fixed effects constant. Noticeable, the magnitude is small, indicating that short-run gasoline demand is highly price inelastic. Besides, the result shows temperature change are changing people transpiration pattern, as warmer conditions generally encourage increased mobility and driving activity. The demand model shows that a one-degree Celsius increase in average monthly temperature raises gasoline consumption by approximately 1.5%. While higher precipitation will reduces fuel usage by discouraging outdoor activity and travel during adverse weather conditions. Each additional 1 mm of precipitation is associated with about a 0.071% decrease in monthly gasoline sales. The coefficient on log vehicle registrations (−0.353) is negative and statistically significant. Indicating that short-run changes in vehicle stock do not translate proportionally into higher gasoline consumption once persistent provincial differences were controlled.
 
 ### Sales Model Counterfactual Analysis
 
 #### Set Up
-To evaluate how gasoline consumption would have changed had the federal carbon tax remained in place, we construct a counterfactual scenario using the estimated log–log demand model. The key mechanism is that the carbon tax affects gasoline consumption only through its impact on retail gasoline prices. Therefore, instead of removing the tax directly from the demand equation, we simulate a counterfactual gasoline price for 2025 by adding back the foregone tax (measured in cents per litre) to the observed retail price. Using the estimated price elasticity from the regression model, we then recompute predicted sales under the counterfactual price while holding all other conditions constant, including vehicle registration, temperature, and province fixed effects. The difference between the observed and counterfactual predicted quantities represents the estimated change in gasoline consumption attributable solely to the removal of the carbon tax.
+To assess the short-run consumption response to gasoline price changes, we conduct a conditional counterfactual simulation using the estimated demand regression. For each province $p$, we define a counterfactual price path in which retail gasoline prices are set to be $5%$ lower from $t \ge t_0$ onward, such that $\log P^{cf}{t,p} = \log P{t,p} + \log(0.95)$, while temperature, precipitation, vehicle registrations, and province fixed effects are held at their observed values. We then generate predicted log sales under the observed and counterfactual price paths using the fitted model and compare the implied monthly sales levels (after exponentiating predictions) over the post-$t_0$ period. The resulting differences represent the short-run consumption response to a price decrease based on our model, conditional on observed controls, rather than a causal treatment effect.
+$$
+\begin{aligned}
+\Delta^{D}_{t,p}
+&=
+\mathbb{E}\!\left[\log\!\left(\text{Sales}_{t,p}\right)\,\middle|\, \log P^{cf}_{t,p}\right]
+-
+\mathbb{E}\!\left[\log\!\left(\text{Sales}_{t,p}\right)\,\middle|\, \log P_{t,p}\right], \\
+\log P^{cf}_{t,p}
+&=
+\log P_{t,p}
++
+\log(0.95), \\
+\Delta^{D,\%}_{t,p}
+&=
+100\left(\exp\!\left(\Delta^{D}_{t,p}\right) - 1\right).
+\end{aligned}
+$$
+
+$\log(\text{Sales}_{t,p})$: logarithm of monthly gasoline sales in province $p$ at month $t$.
+
+$\log P_{t,p}$: logarithm of the observed retail gasoline price in province $p$ at month $t$.
+
+$\log P^{\mathrm{cf}}_{t,p}$: logarithm of the counterfactual gasoline price under a $5%$ price reduction scenario.
+
+$\Delta^{D}_{t,p}$: short-run change in gasoline consumption implied by demand model, conditional on observed controls.
 
 #### Result {#sec-cf2}
-```{r}
-#| echo: false
+$$
+\begin{aligned}
+P^{cf}_{t,p}
+&=
+0.95\,P_{t,p},\\
+\log P^{cf}_{t,p}-\log P_{t,p}
+&=
+\log\!\left(\frac{P^{cf}_{t,p}}{P_{t,p}}\right)
+=
+\log\!\left(\frac{0.95\,P_{t,p}}{P_{t,p}}\right)
+=
+\log(0.95),\\
+\Delta^{D}_{t,p}
+&=
+\hat{\beta}_1\!\left(\log P^{cf}_{t,p}-\log P_{t,p}\right)
+=
+0.028\times\log(0.95)
+\approx
+-0.00144,\\
+\Delta^{D,\%}_{t,p}
+&=
+100\left(\exp(-0.00144)-1\right)
+\approx
+-0.14\%.
+\end{aligned}
+$$
+The counterfactual effect is reported as a single value for all provinces for the same reason as in the supply-side analysis. The counterfactual simulation based on our model conditional association indicates that a 5% reduction in gasoline prices is associated with an approximately 0.14% decrease in monthly gasoline consumption in the short run. This mild response highlights the highly inelastic nature of gasoline demand over short horizons, reflecting very limited adjustment in driving behavior in the short term.
 
 
+# Conclusion and Policy Recommendation
+From a policy perspective, the empirical results indicate that gasoline demand is highly inelastic in the short run. Specifically, the demand model shows that a 5% change in gasoline prices is associated with only a 0.14% change in monthly fuel consumption, once climate conditions, vehicle stock, and province fixed effects are held constant. This implies that increasing fuel prices alone is unlikely to generate substantial immediate reductions in individual gasoline use or driving-related emissions. And higher fuel prices primarily impose only modest short-run adjustment costs on consumers, with very limited immediate changes in transpiration behavior.
 
-demand_base <- demand_data %>%
-  mutate(
-    pred_ln_sales_actual = predict(demand_fit, newdata = ., type = "response"),
-    pred_sales_actual    = exp(pred_ln_sales_actual)   # 还原到数量
-  )
+In this context, restoring the fuel carbon tax remains a relevant and practical policy choice for Federal Government of Canada. The primary role of the carbon tax should not be viewed as directly reducing gasoline consumption, but rather as a stable revenue instrument that supports sustainability and the green transition. Given Canada’s ongoing fiscal pressures and rising expenditures related to climate transition and infrastructure development, reinstating the fuel carbon tax allows the federal government to expand its fiscal capacity.
 
+The revenue generated from the carbon tax can then be redirected toward more effective and flexible emission-reduction oriented measures, such as expanding public transportation in major urban areas, subsidizing electric vehicle adoption, investing in charging infrastructure, and supporting clean transportation technologies. These structural policies will be beneficial in reducing gasoline dependence and vehicle fuel efficiency, leading to more substantial and durable reductions in road transportation emissions. Compared with simply raising fuel prices, this approach is more resilient and better aligned with Canada’s long-term net-zero emissions target and sustainable economic development.
 
-demand_cf <- demand_base %>%
-  mutate(
-    ln_price_cf = if_else(
-      Date >= as.Date("2019-04-01"),
-      ln_price - log(1.05),    
-      ln_price                
-    ),
-
-    ln_price = ln_price_cf
-  ) %>%
-  mutate(
-    pred_ln_sales_cf = predict(demand_fit, newdata = ., type = "response"),
-    pred_sales_cf    = exp(pred_ln_sales_cf)
-  )
+It is important to understand that the carbon tax is not only as a price signal, but also as a financing mechanism that helps alleviate the government’s fiscal burden toward to the road of the green transition. Moreover, carbon tax rebates can partially offset the cost burden on households, ensuring that the overall impact on individual consumers remains limited while supporting Canada’s broader climate and fiscal objectives.
 
 
-cf_summary <- demand_cf %>%
-  # for other period，just add filter(Date >= ..., Date <= ...)
-  group_by(Province) %>%
-  summarise(
-    Actual_Sales = sum(pred_sales_actual),
-    CF_Sales     = sum(pred_sales_cf),
-    Diff_Sales   = CF_Sales - Actual_Sales,
-    Diff_Percent = 100 * Diff_Sales / Actual_Sales
-  ) %>%
-  arrange(Province)
-
-cf_summary
-
-```
-The counterfactual experiment estimates how gasoline demand in each province would have changed if the carbon tax had not been removed, holding all other factors constant. Since the carbon tax increases gasoline prices and the estimated price elasticity in our demand model is negative, the counterfactual scenario predicts slightly lower gasoline sales in every province.
-
-Across provinces, the estimated percentage change in monthly sales (Diff_Percent) ranges narrowly between -0.115% and -0.117%, reflecting the relatively small impact of a one-time price change on short-run gasoline consumption. Provinces with large markets, such as Ontario, Alberta, and British Columbia, show the largest numerical reductions in litres sold (e.g., Ontario: about −160,988 litres), but the relative reduction is similar across all regions. Smaller provinces (e.g., Northwest Territories or Prince Edward Island) display proportionally identical declines, but with smaller absolute magnitudes due to lower baseline consumption.
-
-## Policy Interpretation and Implications
-
-The results from both the price and demand models indicate that the removal of the federal fuel carbon tax has only a modest effect on gasoline prices and almost no measurable impact on overall consumption patterns. Counterfactual estimates suggest that gasoline prices in 2025 would have been higher by less than one cent per litre in most provinces if the carbon tax had remained in place. Such a small price difference is not large enough to alter driving behaviour or reduce gasoline sales in a meaningful way, especially when compared with much stronger determinants such as global crude oil prices and the number of registered vehicles.
-
-Given that research shows gasoline demand is highly inelastic to price, simply reintroducing a fuel carbon tax based on the existing structure is unlikely to significantly reduce road traffic emissions. The carbon tax has a very low pass-through impact to fuel retail prices, and consumer correspond behavior are weakly, meaning that even with increased tax rates, the short-term emission reduction effect will be very limited. However, from a fiscal and long-term transformation perspective, restoring a fuel carbon tax still meaningful. Model results indicate that its impact on consumer spending is limited, while providing the government with additional fiscal space, which allowing tax revenue to be targeted towards areas with higher emission reduction efficiency.
-
-Therefore, a more effective strategy is not simply to increase fuel tax rates, but to prioritize tax revenue towards emission reduction mechanisms with greater behavioral flexibility. Examples include expanding public transportation systems in major cities(Especially for Downtown Toronto Area), accelerating the adoption of electric vehicles through subsidies and incentives, investing in provincial charging infrastructure, and promoting energy-efficient vehicle models and clean transportation technology innovation. These structural measures are more directly effective in reducing gasoline dependence and vehicle-kilometers of driving, thus creating substantial road traffic emission reductions and better aligning with Canada's long-term net-zero emissions target. Compared to simply raising oil prices, this is a more resilient approach that would help improve Canada's industrial and technological capabilities. Furthermore, given that the public has gradually become accustomed to the existence of the fuel carbon tax system over the past five years, its reinstatement is not expected to trigger a significant social sentiment. Within the framework of the Carney government's infrastructure expansion and energy transition policies, the fuel carbon tax will also help alleviate the government's financial pressure on green transition and infrastructure construction, and will remain consistent with Canada's long-term path towards low-carbon and sustainable development over the next four years.
-
-# Appendix {-}
+# Appendix 
 
