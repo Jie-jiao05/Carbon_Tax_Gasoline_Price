@@ -520,7 +520,7 @@ fit
 ```
 The ARIMAX price model is not intended to identify a causal effect of the carbon tax. Instead, it is used to capture the dynamic response of gasoline prices to policy and market variables while accounting for serial dependence and seasonality in prices.
 
-Our ARIMAX is be determined as $\mathrm{ARIMAX}(1,0,1)(0,0,1)_{12}$. The estimated AR(1) coefficient (0.5553) is strongly positive and highly significant, indicating that gasoline prices are highly persistent over time—current prices, and are strongly influenced by prices in the previous month, which is consistent with the retail fuel market gradual adjustment. For MA(1) term of 0.5103, it captures the immediate correction of unanticipated price shocks. The results show that unexpected fluctuations in gasoline prices are partially offset in the next period, rather than being completely absorbed in the current period. In addition, the seasonalMA(1)12 coefficient (−0.1803) reflects seasonal shock adjustment is at the annual frequency.
+Our ARIMAX is be determined as $\mathrm{ARIMAX}(1,0,1)(0,0,1)_{12}$. The estimated AR(1) coefficient (0.5553) is strongly positive and highly significant, indicating that gasoline prices are highly persistent over time—current prices, and are strongly influenced by prices in the previous month, which is consistent with the retail fuel market gradual adjustment. For MA(1) term of 0.5103, it captures the immediate correction of unanticipated price shocks. The results show that unexpected fluctuations in gasoline prices are partially offset in the next period, rather than being completely absorbed in the current period. In addition, the seasonal MA(1)12 coefficient (−0.1803) reflects seasonal shock adjustment is at the annual frequency.
 
 @tbl-price-pooled reports estimates from the pooled price model, which relates log retail gasoline prices to the carbon tax, crude oil prices, and province fixed effects, with Alberta serving as the reference province. The coefficients describe conditional price responses rather than causal policy effects. The estimated coefficient on the carbon tax(0.091) represents a semi-elasticity, as gasoline prices enter the model in logarithms while the tax is measured in cents per litre. The estimate implies that a one-cent increase in the carbon tax is associated with an approximately 0.9 percent increase in retail gasoline prices, holding crude oil prices and province fixed effects constant. 
 ```{r}
@@ -682,5 +682,5 @@ The revenue generated from the carbon tax can then be redirected toward more eff
 It is important to understand that the carbon tax is not only as a price signal, but also as a financing mechanism that helps alleviate the government’s fiscal burden toward to the road of the green transition. Moreover, carbon tax rebates can partially offset the cost burden on households, ensuring that the overall impact on individual consumers remains limited while supporting Canada’s broader climate and fiscal objectives.
 
 \pagebreak
-# Appendix
+# Reference
 
