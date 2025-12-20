@@ -52,7 +52,7 @@ This study uses monthly provincial data from 2017 to 2025. The main variables in
 ### Gasoline Price
 Retail gasoline prices measure the monthly average sales price of gasoline in each Canadian province and territory, expressed in cents per litre. The data are obtained from Statistics Canada’s Monthly Average Retail Prices for Gasoline and Fuel Oil [@statcan2025retailprices]
 
-The reported gasoline prices are recorded at the station level. To construct a representative provincial series, all available station-level observations within a province are averaged for each month. If only a single station observation is available for a province in a given month, that value is used directly. This procedure yields a consistent monthly provincial gasoline price series from January 2017 to September 2025. Figures @fig-price-ca and @fig-price-spe respectively present the national and provincial gasoline price series used in the analysis.
+The reported gasoline prices are recorded at the station level. To construct a representative provincial series, all available station-level observations within a province are averaged for each month. If only a single station observation is available for a province in a given month, that value is used directly. This procedure yields a consistent monthly provincial gasoline price series from January 2017 to September 2025. @fig-price-ca and @fig-price-spe respectively present the national and provincial gasoline price series used in the analysis.
 ```{r}
 #| label: fig-price-ca
 #| fig-cap: Gasoline Price in Canada (General Case)
@@ -138,7 +138,7 @@ ggplot(gas_clean, aes(x = Date, y = Gasoline_Price, color = Province)) +
 ### Gasoline Sales Quantity
 The gasoline sales quantity measures the total volume of fuel sold for road motor vehicles in each province, reported annually in units of one thousand litres. The data come from Statistics Canada’s Sales of fuel used for road motor vehicles, annual (x 1,000) [@statcan2025fuelSales].
 
-Due to the original dataset provided was accounted in annual totals, to incorporate these data into a monthly time series model, each annual value was distributed across twelve months using a set of seasonally informed weights. For example, higher weights are assigned to months with traditionally higher gasoline consumption (Jun to Sept.). The resulting monthly series aligns with the frequency of other variables in the analysis. Figure @fig-sale-pro presents the resulting provincial gasoline sales series. Due to the substantially larger sales volume in Ontario, the vertical axis is displayed on a natural logarithmic scale to ensure comparability across provinces.
+Due to the original dataset provided was accounted in annual totals, to incorporate these data into a monthly time series model, each annual value was distributed across twelve months using a set of seasonally informed weights. For example, higher weights are assigned to months with traditionally higher gasoline consumption (Jun to Sept.). The resulting monthly series aligns with the frequency of other variables in the analysis. @fig-sale-pro presents the resulting provincial gasoline sales series. Due to the substantially larger sales volume in Ontario, the vertical axis is displayed on a natural logarithmic scale to ensure comparability across provinces.
 ```{r}
 #| label: fig-sale-pro
 #| fig-cap: Gasoline Sales in Canada by Province
@@ -238,7 +238,7 @@ The quantity of vehicle registered refers to the total road motor vehicles(inclu
 Our crude oil price are sourced from organization Trading Economic [@tradingeconomics2025crudeoil]. As crude oil is the primary input in gasoline production, this variable captures short-run upstream cost pressures that affect retail gasoline prices uniformly across provinces. @fig-price-ca shows changes in crude oil and gasoline price under same time frame.
 
 ### Climate and Precipitation
-Climate variables are included to account for weather-related variation in driving behavior and fuel consumption. Average temperature and total precipitation data are obtained from Environment and Climate Change Canada [@eccc2025climatenormals]. But due to data availability constraints, each province’s 2024 average temperature and total precipitation are used as fixed climate controls. Figure @fig-cli summarizes cross-province differences in climate conditions.
+Climate variables are included to account for weather-related variation in driving behavior and fuel consumption. Average temperature and total precipitation data are obtained from Environment and Climate Change Canada [@eccc2025climatenormals]. But due to data availability constraints, each province’s 2024 average temperature and total precipitation are used as fixed climate controls. @fig-cli summarizes cross-province differences in climate conditions.
 ```{r}
 #| label: fig-cli
 #| echo: false
@@ -669,7 +669,7 @@ P^{cf}_{t,p}
 -0.14\%.
 \end{aligned}
 $$
-The counterfactual effect is reported as a single value for all provinces for the same reason as in the supply-side analysis. The counterfactual simulation based on our model conditional association indicates that a 5% reduction in gasoline prices is associated with an approximately 0.14% decrease in monthly gasoline consumption in the short run. This mild response highlights the highly inelastic nature of gasoline demand over short horizons, reflecting very limited adjustment in driving behavior in the short term.
+The counterfactual effect is reported as a single value for all provinces for the same reason as elaborated in the supply-side analysis. The counterfactual simulation based on our model conditional association indicates that a 5% reduction in gasoline prices is associated with an approximately 0.14% decrease in monthly gasoline consumption in the short run. This mild response highlights the highly inelastic nature of gasoline demand over short horizons, reflecting very limited adjustment in driving behavior in the short term.
 
 
 # Conclusion and Policy Recommendation
@@ -677,10 +677,10 @@ From a policy perspective, the empirical results indicate that gasoline demand i
 
 In this context, restoring the fuel carbon tax remains a relevant and practical policy choice for Federal Government of Canada. The primary role of the carbon tax should not be viewed as directly reducing gasoline consumption, but rather as a stable revenue instrument that supports sustainability and the green transition. Given Canada’s ongoing fiscal pressures and rising expenditures related to climate transition and infrastructure development, reinstating the fuel carbon tax allows the federal government to expand its fiscal capacity.
 
-The revenue generated from the carbon tax can then be redirected toward more effective and flexible emission-reduction oriented measures, such as expanding public transportation in major urban areas, subsidizing electric vehicle adoption, investing in charging infrastructure, and supporting clean transportation technologies. These structural policies will be beneficial in reducing gasoline dependence and vehicle fuel efficiency, leading to more substantial and durable reductions in road transportation emissions. Compared with simply raising fuel prices, this approach is more resilient and better aligned with Canada’s long-term net-zero emissions target and sustainable economic development.
+The revenue generated from the carbon tax can then be redirected toward more effective and flexible emission-reduction oriented measures, such as expanding public transportation in major urban areas, subsidizing electric vehicle adoption, investing in charging infrastructure, and supporting clean transportation technologies. These structural policies will be beneficial in reducing gasoline dependence and improving vehicle fuel efficiency, leading to more substantial and durable reductions in road transportation emissions. Compared with simply raising fuel prices, this approach is more resilient and better aligned with Canada’s long-term net-zero emissions target and sustainable economic development.
 
 It is important to understand that the carbon tax is not only as a price signal, but also as a financing mechanism that helps alleviate the government’s fiscal burden toward to the road of the green transition. Moreover, carbon tax rebates can partially offset the cost burden on households, ensuring that the overall impact on individual consumers remains limited while supporting Canada’s broader climate and fiscal objectives.
 
-
-# Appendix 
+\pagebreak
+# Appendix
 
